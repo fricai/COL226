@@ -1,0 +1,68 @@
+\documentclass[a4paper]{scrartcl}
+\usepackage{csquotes}
+
+\usepackage{amsthm, amssymb, amsmath}
+\usepackage{bm}
+
+\newtheorem{theorem}{Theorem}
+\newtheorem*{theorem*}{Theorem}
+\newtheorem{lemma}{Lemma}
+\newtheorem*{lemma*}{Lemma}
+
+\newtheorem{claim}{Claim}
+\newtheorem*{claim*}{Claim}
+
+\theoremstyle{definition}
+\newtheorem{definition}{Definition}
+\newtheorem*{definition*}{Definition}
+
+\title{
+	Programming Languages: Lecture 4\\
+	String Matching using a Finite-State Automaton
+}
+\author{Rishabh Dhiman}
+\date{11 January 2022}
+
+\begin{document}
+\maketitle
+
+\section{String Matching Automaton}
+Assume an alphabet $A$ with $A^*$ being the set of all finite strings from $A$. We use $y \succeq z$ to denote that $y$ is a suffix of $z$.
+
+\begin{definition}[Suffix Function]
+	For a string pattern $P[1\dots p]$, $\sigma: A^* \to [0\dots p]$. $\sigma(x)$ is the length of the longest prefix of $P$ which is a suffix of $x$, ie, $\sigma(x) = \max\{k \mid P_k \succeq\}$.
+\end{definition}
+
+\begin{definition}[String Matching Automaton]
+	There is a string matching deterministic automaton $D(P)$ for every pattern $P$,
+
+	The string matching automaton $D(P) = (Q, A, 0, p, \delta)$ corresponding to $P[1\dots p]$, with
+	\begin{enumerate}
+		\item $Q = \{0, \dots, p\}$,
+		\item alphabet $A$,
+		\item $0$ is the start state,
+		\item $p$ is the lone accepting state and
+		\item $\delta: Q \times A \to A$ is the transition function defined by $\delta(q, a) = \sigma(P_qa)$ for each state $q \in Q$ and $a \in A$.
+	\end{enumerate}
+\end{definition}
+Is this called suffix automaton? It's not.
+
+\begin{lemma}[Suffix-Function inequality]
+	For any $x \in A^*$ and $a \in A$, $\sigma(xa) \le \sigma(x) + 1$.
+\end{lemma}
+
+\begin{lemma}[Suffix-Function Recursion]
+	For any $x \in A^*$ and $a \in A$, if $q = \sigma(x)$ then $\sigma(xa) = \sigma(P[1\dots q]a)$.
+\end{lemma}
+
+\begin{theorem}
+	For any text $T[1\dots t]$, $\varphi(T[1\dots i]) = \sigma(T[1\dots i])$ for all $0 \le i \le t$.
+\end{theorem}
+
+\section{Modules in SML}
+\begin{itemize}
+	\item signature $\equiv$ type
+	\item structure $\equiv$ value
+	\item functor $\equiv$ function
+\end{itemize}
+\end{document}

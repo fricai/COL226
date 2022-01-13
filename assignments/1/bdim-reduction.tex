@@ -1,0 +1,574 @@
+\documentclass{scrartcl}
+
+\usepackage{minted}
+\renewcommand{\theFancyVerbLine}{\sffamily\arabic{FancyVerbLine}}
+
+\title{
+	COL226 Assignment 1\\
+	Basic Decimal Integer Machine
+}
+\date{13 January 2022}
+\author{Rishabh Dhiman}
+
+\begin{document}
+
+\maketitle
+
+\section{Absolute Value}
+
+\begin{enumerate}
+\item \begin{minted}{cpp}
+cin >> x;
+if (x <= 0) x = -x;
+cout << x;
+\end{minted}
+
+\item Get rid of constants and unary operators.
+
+\begin{minted}{cpp}
+zero = 0;
+cin >> x;
+if (x <= zero) x = zero - x;
+cout << x;
+\end{minted}
+
+\item Write branches and loops as goto
+\begin{minted}{cpp}
+zero = 0;
+cin >> x;
+if (x > zero) goto OUT;
+x = zero - x;
+OUT: cout << x;
+\end{minted}
+
+\item Write as code/mem state machine.
+\begin{minted}[linenos,firstnumber=0]{cpp}
+mem[0] := 0;
+input: mem[1];
+mem[2] := mem[1] > mem[0];
+if mem[2] goto code[5];
+mem[1] := mem[0] - mem[1];
+output: mem[1];
+halt;
+\end{minted}
+
+\item Convert to BDIM with wildcards.
+\begin{minted}[linenos,firstnumber=0]{text}
+(16,0,_,0)
+(1,_,_,1)
+(12,1,0,2)
+(13,2,_,5)
+(7,0,1,1)
+(15,1,_,_)
+(0,_,_,_)
+\end{minted}
+\end{enumerate}
+
+\section{Arithmetic Progression}
+\[\sum_{i = 0}^{n - 1} (a + id) = na + \frac{n(n - 1)}{2} d\]
+\begin{enumerate}
+\item \begin{minted}{cpp}
+cin >> a >> d >> n;
+cout << (n * a + n * (n - 1) / 2 * d);
+\end{minted}
+
+\item Get rid of temporary values.
+
+\begin{minted}{cpp}
+cin >> a;
+cin >> d;
+cin >> n;
+x = 1;
+y = n - x;
+y = n * y;
+y = y * d;
+x = 2;
+y = y / x;
+x = n * a;
+x = x + y;
+cout << x;
+\end{minted}
+
+\item Write as code/mem state machine.
+\begin{minted}[linenos,firstnumber=0]{cpp}
+input: mem[0];
+input: mem[1];
+input: mem[2];
+mem[3] := 1;
+mem[4] := mem[2] - mem[3];
+mem[4] := mem[2] * mem[4];
+mem[4] := mem[4] * mem[1];
+mem[3] := 2;
+mem[4] := mem[4] / mem[3];
+mem[3] := mem[2] * mem[0];
+mem[3] := mem[3] + mem[4];
+output: mem[3];
+halt;
+\end{minted}
+
+\item Convert to assembly-BDIM
+\begin{minted}[linenos,firstnumber=0]{text}
+(input,_,_,0)
+(input,_,_,1)
+(input,_,_,2)
+(read,1,_,3)
+(sub,2,3,4)
+(mul,2,4,4)
+(mul,4,1,4)
+(read,2,_,3)
+(div,4,3,4)
+(mul,2,0,3)
+(add,3,4,3)
+(output,3,_,_)
+(halt,_,_,_)
+\end{minted}
+
+\item Convert BDIM with strings to BDIM using code.
+	\inputminted[linenos,firstnumber=0]{text}{bdim/ap.bdim}
+\end{enumerate}
+
+\section{Factorial}
+\begin{enumerate}
+\item \begin{minted}{cpp}
+cin >> n;
+f = 1;
+i = 0;
+while (i < n) {
+	++i;
+	f = f * i;
+}
+\end{minted}
+
+\item Write branches and loops as goto
+\begin{minted}{cpp}
+cin >> n;
+f = 1;
+i = 0;
+L: i = i + 1;
+f = f * i;
+if (i < n) goto L;
+cout << f;
+\end{minted}
+
+\item Get rid of temporary values and constants.
+
+\begin{minted}{cpp}
+cin >> n;
+one = 1;
+f = 1;
+i = 0;
+L: i = i + one;
+f = f * i;
+b = n > i;
+if b goto L;
+cout << f;
+\end{minted}
+
+
+\item Write as code/mem state machine.
+\begin{minted}[linenos,firstnumber=0]{cpp}
+input: mem[0];
+mem[1] := 1;
+mem[2] := 1;
+mem[3] := 0;
+mem[3] := mem[3] + mem[1];
+mem[2] := mem[2] * mem[3];
+mem[4] := mem[0] > mem[3];
+if mem[4] goto code[4];
+output: mem[2];
+halt;
+\end{minted}
+
+\item Convert to BDIM-string
+\begin{minted}[linenos,firstnumber=0]{text}
+(input,_,_,0)
+(read,1,_,1)
+(read,1,_,2)
+(read,0,_,3)
+(add,3,1,3)
+(mul,2,3,2)
+(gt,0,3,1)
+(if,4,_,4)
+(output,2,_,_)
+(halt,_,_,_)
+\end{minted}
+
+\item Convert BDIM-string to BDIM using code.
+	\inputminted[linenos,firstnumber=0]{text}{bdim/fact.bdim}
+\end{enumerate}
+
+\section{Fibonacci}
+\begin{enumerate}
+\item \begin{minted}{cpp}
+cin >> n;
+a = 0;
+b = 1;
+for (int i = 0; i < n; ++i) {
+	a = a + b;
+	c = a;
+	a = b;
+	b = c;
+}
+cout << a;
+\end{minted}
+
+\item Write branches and loops as goto
+\begin{minted}{cpp}
+cin >> n;
+a = 0;
+b = 1;
+i = 1;
+L: if (i > n) goto E;
+a = a + b;
+c = a;
+a = b;
+b = c;
+i = i + 1;
+goto L;
+E: cout << a;
+\end{minted}
+
+\item Get rid of temporary values and constants.
+
+\begin{minted}{cpp}
+cin >> num;
+a = 0;
+b = 1;
+i = 1;
+one = 1;
+L: cmp = i > num;
+if (cmp) goto E;
+a = a + b;
+c = a;
+a = b;
+b = c;
+i = i + one;
+goto L;
+E: cout << a;
+\end{minted}
+
+
+\item Write as code/mem state machine.
+\begin{minted}[linenos,firstnumber=0]{cpp}
+input: mem[0];
+mem[1] := 0;
+mem[2] := 1;
+mem[3] := 1;
+mem[4] := 1;
+mem[5] := mem[3] > mem[0];
+if (mem[5]) goto code[13];
+mem[1] := mem[1] + mem[2];
+mem[6] := mem[1];
+mem[1] := mem[2];
+mem[2] := mem[6];
+mem[3] := mem[3] + mem[4];
+goto code[5];
+output: mem[1];
+halt;
+\end{minted}
+
+\item Convert to assembly-BDIM
+\begin{minted}[linenos,firstnumber=0]{text}
+(input,_,_,0)
+(read,0,_,1)
+(read,1,_,2)
+(read,1,_,3)
+(read,1,_,4)
+(gt,3,0,5)
+(if,5,_,13)
+(add,1,2,1)
+(move,1,_,6)
+(move,2,_,1)
+(move,6,_,2)
+(add,3,4,3)
+(goto,_,_,5)
+(output,1,_,_)
+(halt,_,_,_)
+\end{minted}
+
+\item Convert BDIM with strings to BDIM using code.
+	\inputminted[linenos,firstnumber=0]{text}{bdim/fib.bdim}
+\end{enumerate}
+
+\section{GCD}
+\begin{enumerate}
+\item \begin{minted}{cpp}
+cin >> x >> y;
+if (x <= 0) x = -x;
+if (y <= 0) y = -y;
+while (y != 0) {
+	x = x % y;
+	z = x;
+	x = y;
+	y = z;
+}
+cout << x;
+\end{minted}
+
+\item Write branches and loops as goto
+\begin{minted}{cpp}
+cin >> x >> y;
+if (x <= 0) x = -x;
+if (y <= 0) y = -y;
+L: if (y == 0) goto E;
+x = x % y;
+z = x;
+x = y;
+y = z;
+goto L;
+E: cout << x;
+\end{minted}
+
+\item Get rid of temporary values and constants.
+
+\begin{minted}{cpp}
+cin >> x;
+cin >> y;
+zero = 0;
+cmp = x > zero;
+if (cmp) goto A;
+x = zero - x;
+A: cmp = y > zero;
+if (cmp) goto L;
+y = zero - y;
+L: cmp = y == zero;
+if (cmp) goto E;
+x = x % y;
+z = x;
+x = y;
+y = z;
+goto L;
+E: cout << x;
+\end{minted}
+
+
+\item Write as code/mem state machine.
+\begin{minted}[linenos,firstnumber=0]{cpp}
+input: mem[1];
+input: mem[2];
+mem[0] := 0;
+mem[4] := mem[1] > mem[0];
+if (mem[4]) goto code[6];
+mem[1] := mem[0] - mem[1];
+mem[4] := mem[2] > mem[0];
+if (mem[4]) goto code[9];
+mem[2] := mem[0] - mem[2];
+mem[4] := mem[2] = mem[0];
+if (mem[4]) goto code[16];
+mem[1] := mem[1] mod mem[2];
+mem[3] := mem[1];
+mem[1] := mem[2];
+mem[2] := mem[3];
+goto code[9];
+output: mem[1];
+halt;
+\end{minted}
+
+\item Convert to assembly-BDIM
+\begin{minted}[linenos,firstnumber=0]{text}
+(input,_,_,1)
+(input,_,_,2)
+(read,0,_,0)
+(gt,1,0,4)
+(if,4,_,6)
+(sub,0,1,1)
+(gt,2,0,4)
+(if,4,_,9)
+(sub,0,2,2)
+(eq,2,0,4)
+(if,4,_,16)
+(mod,1,2,1)
+(move,1,_,3)
+(move,2,_,1)
+(move,3,_,2)
+(goto,_,_,9)
+(output,1,_,_)
+(halt,_,_,_)
+\end{minted}
+
+\item Convert BDIM with strings to BDIM using code.
+	\inputminted[linenos,firstnumber=0]{text}{bdim/gcd.bdim}
+\end{enumerate}
+
+\section{Reverse}
+\begin{enumerate}
+\item \begin{minted}{cpp}
+cin >> x;
+y = 0;
+while (x != 0) {
+	y = 10 * y + (x % 10);
+	x /= 10;
+}
+cout << y;
+\end{minted}
+
+\item Write branches and loops as goto
+\begin{minted}{cpp}
+cin >> x;
+y = 0;
+L: if (x == 0) goto E;
+y = 10 * y + (x % 10);
+x /= 10;
+goto L;
+E: cout << y;
+\end{minted}
+
+\item Get rid of temporary values and constants.
+
+\begin{minted}{cpp}
+zero = 0;
+ten = 10;
+cin >> x;
+y = 0;
+L: cmp = x == zero;
+if (cmp) goto E;
+y = ten * y;
+mod = x % ten;
+y = y + mod;
+x = x / ten;
+goto L;
+E: cout << y;
+\end{minted}
+
+\item Write as code/mem state machine.
+\begin{minted}[linenos,firstnumber=0]{cpp}
+mem[0] := 0;
+mem[1] := 10;
+input: mem[2];
+mem[3] := 0;
+mem[4] := mem[2] = mem[0];
+if (mem[4]) goto code[11];
+mem[3] := mem[1] * mem[3];
+mem[4] := mem[2] % mem[1];
+mem[3] := mem[3] + mem[4];
+mem[2] := mem[2] / mem[1];
+goto code[4];
+output: mem[3];
+\end{minted}
+
+\item Convert to assembly-BDIM
+\begin{minted}[linenos,firstnumber=0]{text}
+(read,0,_,0)
+(read,10,_,1)
+(input,_,_,2)
+(read,0,_,3)
+(eq,2,0,4)
+(if,4,_,11)
+(mul,1,3,3)
+(mod,2,1,4)
+(add,3,4,3)
+(div,2,1,2)
+(goto,_,_,4)
+(output,3,_,_)
+(halt,_,_,_)
+\end{minted}
+
+\item Convert BDIM with strings to BDIM using code.
+	\inputminted[linenos,firstnumber=0]{text}{bdim/reverse.bdim}
+\end{enumerate}
+
+\section{Russian Multiplication}
+\begin{enumerate}
+\item \begin{minted}{cpp}
+cin >> x >> y;
+res = 0;
+while (y != 0) {
+	if (y % 2 == 1)
+		res += x;
+	x = x + x;
+	y /= 2;
+}
+cout << res;
+\end{minted}
+
+\item Write branches and loops as goto
+\begin{minted}{cpp}
+cin >> x >> y;
+res = 0;
+if (y > 0) goto L;
+x = -x;
+L: if (y == 0) goto E;
+   if (y % 2 == 0) goto SKIP;
+   res += x;
+SKIP: x = x + x;
+   y = y / 2;
+   goto L;
+E: cout << res;
+\end{minted}
+
+\item Get rid of temporary values and constants.
+
+\begin{minted}{cpp}
+zero = 0;
+two = 2;
+cin >> x;
+cin >> y;
+res = 0;
+cmp = y > zero;
+if (cmp) goto L;
+x = zero - x;
+y = zero - y;
+L: cmp = y == zero;
+if (cmp) goto E;
+cmp = y % two;
+cmp = cmp == zero;
+if (cmp) goto SKIP;
+res = res + x;
+SKIP: x = x + x;
+y = y / two;
+goto L;
+E: cout << res;
+\end{minted}
+
+\item Write as code/mem state machine.
+\begin{minted}[linenos,firstnumber=0]{cpp}
+mem[0] := 0;
+mem[1] := 2;
+input: mem[2];
+input: mem[3];
+mem[4] := 0;
+mem[5] := mem[3] > mem[0];
+if (mem[5]) goto code[9];
+mem[2] := mem[0] - mem[2];
+mem[3] := mem[0] - mem[3];
+L: mem[5] := mem[3] = mem[0];
+if (mem[5]) goto code[18];
+mem[5] := mem[3] % mem[1];
+mem[5] := mem[5] = mem[0];
+if (mem[5]) goto code[15];
+mem[4] := mem[4] + mem[2];
+SKIP: mem[2] := mem[2] + mem[2];
+mem[3] := mem[3] / mem[1];
+goto code[9];
+E: output: mem[4];
+halt;
+\end{minted}
+
+\item Convert to assembly-BDIM
+\begin{minted}[linenos,firstnumber=0]{text}
+(read,0,_,0)
+(read,2,_,1)
+(input,_,_,2)
+(input,_,_,3)
+(read,0,_,4)
+(gt,3,0,5)
+(if,5,_,9)
+(sub,0,2,2)
+(sub,0,3,3)
+(eq,3,0,5)
+(if,5,_,18)
+(mod,3,1,5)
+(eq,5,0,5)
+(if,5,_,15)
+(add,4,2,4)
+(add,2,2,2)
+(div,3,1,3)
+(goto,_,_,9)
+(output,4,_,_)
+(halt,_,_,_)
+\end{minted}
+
+\item Convert BDIM with strings to BDIM using code.
+	\inputminted[linenos,firstnumber=0]{text}{bdim/russian.bdim}
+\end{enumerate}
+\end{document}

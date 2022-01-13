@@ -1,0 +1,68 @@
+\documentclass[a4paper]{scrartcl}
+\usepackage{csquotes}
+
+\usepackage{amsthm, amssymb, amsmath}
+\usepackage{bm}
+
+\newtheorem{theorem}{Theorem}
+\newtheorem*{theorem*}{Theorem}
+\newtheorem{lemma}{Lemma}
+\newtheorem*{lemma*}{Lemma}
+
+\newtheorem{claim}{Claim}
+\newtheorem*{claim*}{Claim}
+
+\theoremstyle{definition}
+\newtheorem{definition}{Definition}
+\newtheorem*{definition*}{Definition}
+
+\title{
+	Programming Languages: Lecture 5\\
+	Functors and Compiling
+}
+\author{Rishabh Dhiman}
+\date{13 January 2022}
+
+\begin{document}
+\maketitle
+
+\section{Functors}
+\begin{definition}[Functor]
+	A \emph{functor} is a structure that takes other structures as parameters and yields a new structure,
+	\begin{enumerate}
+		\item A functor can be applied to argument structures to yield a new structure.
+		\item A functor can be applied only to structures that match certain signature constraints.
+		\item Functors may be used to test existing structures or to create new structures.
+		\item Functors may be used to express generic algorithms.
+	\end{enumerate}
+\end{definition}
+
+
+\section{Compiling}
+In general, a compiler/interpreter for a source language $\mathcal S$ written in some language $\mathcal C$ translates code written in $\mathcal S$ to a target $\mathcal T$.
+
+\subsection{The Compiling Process}
+Besides $\mathcal S, \mathcal C, \mathcal T$, there could be several other intermediate lanauages, $\mathcal{I}_1, \mathcal{I}_2, \dots$ called \emph{intermediate representations}, int which the source program could be translated in the process of compiling or interpreting the source programs written in $\mathcal S$.
+
+Some of these intermediate representations could just be datatypes of OOPs languages.
+
+\subsection{Phases of a Compiler}
+The phases may be different from the various passes in compilation.
+
+\begin{center}
+	$\downarrow$ stream of characters\\
+	Scanner (Lexical Analyzer)\\
+	$\downarrow$ stream of tokens\\
+	Parser (Syntactic Analyzer)\\
+	$\downarrow$ parse tree (syntax tree)\\
+	Semantic Analyzer -- Till here was the frontend of the compiler\\
+	$\downarrow$ abstract syntax tree\\
+	I.R. Code Generator\\
+	$\downarrow$ intermediate representation\\
+	Optimizer\\
+	$\downarrow$ optimized intermediate representation\\
+	Code Generator\\
+	$\downarrow$ target code
+\end{center}
+Symbol table manager on right, and Error-handler on left.
+\end{document}
