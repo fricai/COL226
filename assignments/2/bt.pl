@@ -35,26 +35,38 @@ trPreorderAcc(empty, List, List).
 trInorder(BT, List):- trInorderAcc(BT, [], List).
 trInorderAcc(node(N, L, R), Acc, List):-
 	trInorderAcc(L, Acc1, List),
-	Acc1 = [N | List2],
-	trInorderAcc(R, Acc, List2).
+	Acc1 = [N | List1],
+	trInorderAcc(R, Acc, List1).
 trInorderAcc(empty, List, List).
 
 trPostorder(BT, List):- trPostorderAcc(BT, [], List).
 trPostorderAcc(node(N, L, R), Acc, List):-
-	trPostorderAcc(L, Acc1, List),
-	trPostorderAcc(R, Acc2, Acc1),
-	Acc2 = [N | Acc].
+	trPostorderAcc(L, Acc2, List),
+	trPostorderAcc(R, Acc1, Acc2),
+	Acc1 = [N | Acc].
 trPostorderAcc(empty, List, List).
 
 % Euler Tour
+% eulerTour(empty, []).
+% eulerTour(node(N, L, R), List):-
+%	eulerTour(L, X), eulerTour(R, Y),
+%	append([[N], X, [N], Y, [N]], List).
+
+% Implemented using accumulator:
 eulerTour(empty, []).
-eulerTour(node(N, L, R), List):-
-	eulerTour(L, X), eulerTour(R, Y),
-	append([[N], X, [N], Y, [N]], List).
+eulerTour(BT, List):- eulerTour(BT, [], List).
+eulerTour(node(N, L, R), Acc, List):-
+	List = [N | List2],
+	eulerTour(L, Acc2, List2),
+	Acc2 = [N | List1],
+	eulerTour(R, Acc1, List1),
+	Acc1 = [N | Acc].
+eulerTour(empty, List, List).
 
 preET(BT, L):- eulerTour(BT, ET), preETList(ET, [], L).
 
 % Explain the logic here
+%  Implemented using "stacks"
 preETList([], [], []).
 preETList([X | Tail], [], [X | L]):-
 	preETList(Tail, [(X, l)], L).
@@ -98,12 +110,13 @@ toString(node(N, L, R), S):-
  *  A tree is balanced iff for every node,
  *  the difference in height of the two subtrees <= 1
  */
-isBalanced(empty).
-isBalanced(node(N, L, R)):- % make this O(N)
+isBalanced(BT):- isBalanced(BT, _).
+isBalanced(empty, 0).
+isBalanced(node(N, L, R), H):- % make this O(N)
 	integer(N),
-	isBalanced(L), isBalanced(R),
-	height(L, X), height(R, Y),
-	Del is Y - X, % Difference in height
+	isBalanced(L, HL), isBalanced(R, HR),
+	H is 1 + max(HL, HR),
+	Del is HR - HL, % Difference in height
 	Del > -2, Del < 2.
 
 % BST Check
@@ -118,9 +131,9 @@ isBST(node(N, L, R)) :- isBST(node(N, L, R), _, _).
 isBST(node(N, L, R), Min, Max) :- % Max, Min are the max, min key in the tree
 	integer(N), isBST(L, Min, LeftMax), isBST(R, RightMin, Max),
 	LeftMax < N, N < RightMin.
-isBST(node(N, L, empty), Min, N) :-
+isBST(node(N, L, empty), Min, N) :- % N = Max if no right child
 	integer(N), isBST(L, Min, LeftMax), LeftMax < N.
-isBST(node(N, empty, R), N, Max) :-
+isBST(node(N, empty, R), N, Max) :- % N = Min if no left child
 	integer(N), isBST(R, RightMin, Max), N < RightMin.
 isBST(node(N, empty, empty), N, N) :- integer(N).
 
