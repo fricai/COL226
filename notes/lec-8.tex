@@ -1,0 +1,91 @@
+\documentclass[a4paper]{scrartcl}
+
+\usepackage{minted}
+
+\usepackage{tikz}
+\usetikzlibrary{automata, positioning, arrows}
+\tikzset{
+	->, % makes the edges directed
+	>=stealth', % makes the arrow heads bold
+	node distance=3cm, % specifies the minimum distance between two nodes. Change if necessary.
+	every state/.style={thick, fill=gray!10}, % sets the properties for each ’state’ node
+	initial text=$ $, % sets the text that appears on the start arrow
+}
+
+\usepackage{amsthm, amssymb, amsmath}
+\usepackage{bm}
+
+\newtheorem{theorem}{Theorem}
+\newtheorem*{theorem*}{Theorem}
+\newtheorem{lemma}{Lemma}
+\newtheorem*{lemma*}{Lemma}
+
+\newtheorem{claim}{Claim}
+\newtheorem*{claim*}{Claim}
+
+\theoremstyle{definition}
+\newtheorem{definition}{Definition}
+\newtheorem*{definition*}{Definition}
+
+\newcommand{\eps}{\varepsilon}
+\newcommand{\card}[1]{\left\lvert #1 \right\rvert}
+
+\newcommand{\NN}{\mathbb N}
+
+\title{
+	Programming Languages: Lecture 7\\
+	Regex
+}
+\author{Rishabh Dhiman}
+\date{15 January 2022}
+
+\begin{document}
+\maketitle
+
+\section{Deterministic Finite Automaton}
+For a deterministic automaton,
+\begin{enumerate}
+	\item No $\eps$-transitions exist
+	\item Exactly one transition exists for every character and state.
+\end{enumerate}
+We can convert NFA to DFA using the powerset construction.
+
+\section{Scanning with Output}
+Scanner is very similar to a scanner.
+\begin{itemize}
+	\item DFA just accepts or rejects a token/lexeme. Scanner needs to classify them all.
+	\item Algorithms minimize number of accepting states of DFA, this is not desirable in scanners where you need to classify the strings.
+\end{itemize}
+
+\section{Production rules}
+Form production rules from the DFA.
+\begin{align*}
+	S &\to aA \mid bB\\
+	A &\to aA \mid bC\\
+	B &\to aA \mid bB\\
+	C &\to aA \mid bD\\
+	D &\to aA \mid bB \mid \eps
+\end{align*}
+You start with the start state, $S$ here. Then apply the production rules to generate strings. End at a terminal variable, one with a transition to $\eps$.
+
+This is a regular or right-linear grammar as all the variables come at the end in the production rules.
+
+We can have production rules which don't generate a regular language. Consider the language
+\[P = \{a^n b^n \mid n \in \NN_0\}.\]
+$P$ is not regular (there exists $i \neq j$ such that $a^i$ and $a^j$ end at same state in DFA, which, $a^i b^i$ being accepted implies $a^j b^i$ gets accepted) but can easily be represented by the production rule
+\[X \to a X b \mid \eps.\]
+
+\section{Grammar}
+\begin{definition}[Grammar]
+A grammar $G = \langle N, T, P, S\rangle$ consists of
+\begin{itemize}
+	\item a set $N$ of nonterminal symbols,
+	\item a start symbol $S \in N$,
+	\item a set $T$ of terminal symbols or the alphabet,
+	\item a set $P$ of productions or rewrite rules where each rule is of the form $\alpha \to \beta$ for $\alpha, \beta \in (N \cup T)^*$.
+\end{itemize}
+\end{definition}
+\begin{definition}
+	Given a grammar $G$, any $\alpha \in (N\cup T)^*$ is called a sentential form. Any $x \in T^*$ is called a sentence.
+\end{definition}
+\end{document}

@@ -1,0 +1,89 @@
+\documentclass[a4paper]{scrartcl}
+
+\usepackage{minted}
+
+\usepackage{amsthm, amssymb, amsmath}
+\usepackage{bm}
+
+\newtheorem{theorem}{Theorem}
+\newtheorem*{theorem*}{Theorem}
+\newtheorem{lemma}{Lemma}
+\newtheorem*{lemma*}{Lemma}
+
+\newtheorem{claim}{Claim}
+\newtheorem*{claim*}{Claim}
+
+\theoremstyle{definition}
+\newtheorem{definition}{Definition}
+\newtheorem*{definition*}{Definition}
+
+\newcommand{\eps}{\varepsilon}
+
+\title{
+	Programming Languages: Lecture 6\\
+	Lexical Analysis
+}
+\author{Rishabh Dhiman}
+\date{15 January 2022}
+
+\begin{document}
+\maketitle
+
+\section{Lexical Analysis}
+A source program consists of a stream of characters.
+
+Given a stream of characters that make up a source program the compiler must first break up this stream into a sequence of ``lexemes" and other symbols.
+
+Lexemes are often separated by non-lexemes.
+
+Certain sequences of characters are \emph{not} tokens (Eg.: comments)
+
+\subsection{Erroneous Lexemes}
+Some lexemes violare all rules of tokens.
+\begin{itemize}
+	\item 12ab would not be an identifier or a number in most languages, 0x2ab may be hex.
+	\item 127.0.1 probably won't be a number but 127.0.0.1 is a valid IP.
+\end{itemize}
+
+\subsection{Tokens}
+Common examples
+\begin{itemize}
+	\item Constants
+	\item Identitfiers -- Name of variables, constants, procedures, functions, etc.
+	\item Keywords/Reserved words -- void, public, main
+	\item Operators -- +, *, /
+	\item Punctuation -- ,, :, .
+	\item Brackets -- (, ), [, ], begin, end, case, esac
+\end{itemize}
+
+\subsection{Scanning}
+During the scanning phase the compiler/interpreter
+\begin{itemize}
+	\item takes a stream of characters and identifies tokens from the lexemes
+	\item eliminiates comments and redundant whitespace
+	\item keeps track of line numbers and columb numbers and passes them as parameters to the other phases to enable error-reporting and handling to the user.
+\end{itemize}
+
+\section{Regular Expressions Language}
+\begin{itemize}
+	\item Any set of strings built up from the symbols of $A$ is called a language. $A^*$ is the set of all finite strings buillt up form $A$.
+	\item Each regex is a finite sequence of symbols made up of symbols from the alphabet and other symbols called operators.
+	\item A regular expression may be used to describe an \emph{infinite} collection of strings.
+\end{itemize}
+
+\section{Language}
+Any collection of finite strings is a language.
+
+\section{Simple Language of Regular Expressions}
+We consider a simple language of regular expressions. Assume a (finite) alphabet $A$ of symbols. Each regular expression $r$ denotes a set of strings $\mathcal L(r)$. $\mathcal L(r)$ is also called the \emph{language} spexified by the regular expression $r$.
+\begin{itemize}
+	\item Symbol, for $a \in A$, $\{a\}$ refers to the single element $a$.
+	\item Concatenation. $\mathcal{L}(rs) = \mathcal{L}(r)\mathcal{L}(s)$.
+	\item Epsilon $\eps$ denotes the language with a single element the \emph{empty} string, ``\;".
+		\[L(\eps) = \{\eps\}.\]
+	\item Alternation. Given two regex $r, s$; $r \mid s$ is the set of union of the languages specified by $r$ and $s$.
+		\[\mathcal{L}(r \mid s) = \mathcal{L}(r) \cup \mathcal{L}(s).\]
+	\item Kleene Closure $r^* = r^0 \mid r^1 \mid \cdots$ denotes an infinite union of languages.
+		\[\mathcal{L}(r^*) = \bigcup_{n = 0}^{\infty} \mathcal{L}(r^n).\]
+\end{itemize}
+\end{document}
