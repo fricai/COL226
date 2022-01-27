@@ -37,3 +37,31 @@ exampleBST(
 		)
 	)
 ).
+
+duplicateEulerTour0(
+	node(
+		1,
+		node(
+			1,
+			empty,
+			node(2, empty, empty)
+		),
+		node(1, empty, empty)
+	)
+).
+
+duplicateEulerTour1(
+	node(
+		1,
+		node(
+			1,
+			node(
+				1,
+				node(2, empty, empty),
+				empty
+			),
+			empty
+		),
+		empty
+	)
+).

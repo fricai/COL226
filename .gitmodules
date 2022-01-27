@@ -1,0 +1,6 @@
+[submodule "assignments/2/tests/prolog_tests"]
+	path = assignments/2/tests/prolog_tests
+	url = https://github.com/taitaisama/prolog_tests
+[submodule "assignments/2/prolog_tests"]
+	path = assignments/2/prolog_tests
+	url = https://github.com/taitaisama/prolog_tests
