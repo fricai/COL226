@@ -1,0 +1,235 @@
+\documentclass[a4paper]{scrartcl}
+
+\usepackage[T1]{fontenc}
+
+\usepackage{minted}
+
+\usepackage{syntax}
+
+\usepackage{tikz}
+\usetikzlibrary{automata, positioning, arrows}
+\tikzset{
+	->, % makes the edges directed
+	>=stealth', % makes the arrow heads bold
+	node distance=3cm, % specifies the minimum distance between two nodes. Change if necessary.
+	every state/.style={thick, fill=gray!10}, % sets the properties for each ’state’ node
+	initial text=$ $, % sets the text that appears on the start arrow
+}
+
+\usepackage{amsthm, amssymb, amsmath}
+\usepackage{bm}
+
+\newtheorem{theorem}{Theorem}
+\newtheorem*{theorem*}{Theorem}
+\newtheorem{lemma}{Lemma}
+\newtheorem*{lemma*}{Lemma}
+
+\newtheorem*{example}{Example}
+\newtheorem*{exercise}{Exercise}
+\newtheorem*{notation}{Notation}
+
+\newtheorem{claim}{Claim}
+\newtheorem*{claim*}{Claim}
+
+\theoremstyle{definition}
+\newtheorem{definition}{Definition}
+\newtheorem*{definition*}{Definition}
+
+\newtheorem{algorithm}{Algorithm}
+
+\newcommand{\eps}{\varepsilon}
+\newcommand{\card}[1]{\left\lvert #1 \right\rvert}
+
+\newcommand{\NN}{\mathbb N}
+
+\newcommand{\derives}{\stackrel{*}{\Rightarrow}}
+
+\title{
+	Programming Languages: Lecture 11\\
+	Introduction to Parsing
+}
+\author{Rishabh Dhiman}
+\date{27 January 2022}
+
+\begin{document}
+\maketitle
+
+\section{Syntax Diagrams}
+Can read on this in the slides later.
+
+\section{Parsing}
+Since
+\begin{itemize}
+	\item parsing requires checking whether a given token stream \emph{conforms} to the rules of the grammar and
+	\item sicne a CFG may generate an infinite number of different strings.
+\end{itemize}
+Any parsing method should be guided by the given input (token) string, so that a deterministic strategy may be evolved.
+
+Aim of parsing is to transform a linear sequence of tokens into a derivation tree (parse tree).
+
+Design of the PL should enable a linear-time parsing algorithm.
+
+Most programming languages are designed to ensure a linear-time parsing algorithm.
+
+\section{Parsing Methods}
+Two kinds of parsing methods
+\begin{enumerate}
+	\item Top-down parsing. Try to \emph{generate} the given input sentence form the start symbol of the grammar by applying the production rules.
+	\item Bottum-up parsing. Try to \emph{reduce} the given input sentence to the start symbol by applying the rules in \emph{reverse}.
+\end{enumerate}
+
+\begin{itemize}
+	\item Top-down predictive parsing using a LL(1) grammar. Recursive-descent parsing posisble when the implementation language supports recursion.
+	\item Botton-up parsing using a LR(1) or LALR(1) parser.
+\end{itemize}
+
+\begin{itemize}
+	\item LL(1) = \emph{L}eft-to-Right scanning of tokens with \emph{L}eftmost derivation with \emph{1} token look-ahead
+	\item LL(1) = \emph{L}eft-to-Right scanning of tokens with (reverse of) \emph{R}ightmost derivation with \emph{1} token look-ahead
+	\item LALR(1) = \emph{L}ook \emph{A}head LR(1) parser with \emph{1} token lookeahead. Restricted LR(1) with `LR(1) items'.
+\end{itemize}
+
+\section{Top-Down Parsing}
+\begin{itemize}
+	\item Try to generate the given input sentence from the start symbol of the grammar by applying the production rules.
+	\item Not the most general.
+	\item But most modern high-level PLs are designed to be efficiently parsed by this method.
+	\item \emph{Recursive-descent} is the most frequently employed technique when language $\mathcal{C}$ in which the complier is written, supports recursion.
+\end{itemize}
+
+\section{Recursive-Descent Parsing}
+\begin{itemize}
+	\item Suitable for grammars that are LL(1) parseable.
+	\item A set of (mutually) recursive procedures.
+	\item Has a single procedure/function for each non-terminal symbol.
+	\item Allows for syntax errors to be pinpointed more accurately than most other parsing methods.
+\end{itemize}
+
+\subsection{Caveats with RDP}
+They cannot handle situations of such forms,
+\begin{itemize}
+	\item Any left-recursion in the grammar can lead to infinite recursive calls during which no input token is consumed and there is no return from the recursion, ie, they shouldn't be of the form
+\[A \to A \alpha.\]
+This would result in an infinite recursion with no input token consumed, such a recursion is called a \emph{direct left recursion}.
+	\item You can generalize this to a sequence of production rules which leads to a production of the form $A \stackrel{*}{\Rightarrow} A \alpha$. This is called an \emph{indirect left recursion}.
+	\item For RDP to succeed without backtracking, for each input token and each non-terminal symbol there should be only one rule applicable.
+
+	\begin{example}
+		A set of productions of the form
+		\[A \to a B \beta \mid a C \gamma\]
+		where $B$ and $C$ stand for different phrases would lead to non-determinism. The normal practice then would be to \emph{left-factor} the two productions by introducing a new non-terminal symbol $A'$ and rewrite the rule as
+		\begin{align*}
+			A &\to a A',\\
+			A' &\to B\beta \mid C\gamma,
+		\end{align*}
+		provided $B$ and $C$ generate terminal strings with different first symbols (otherwise more left-factoring needs to be performed).
+	\end{example}
+\end{itemize}
+
+\begin{example}[Left-Recursive Grammar]
+	The following grammar is unambiguous and implements both left-associativity and precedence of operators,
+	\[G = \langle \{E, T, D\}, \{a, b, -, /, (, )\}, P, E\rangle\]
+	whose productions are
+	\begin{align*}
+		E &\to E - T \mid T,\\
+		T &\to T / D \mid D,\\
+		D &\to a \mid b \mid (E).
+	\end{align*}
+	$T \to T / D \to T / a$ gives an indirect left recursion, and $E \to E - T$ is a direct left recursion.
+
+	We can get rid of indirect left-recursion as follows
+	\begin{align*}
+		E &\to T E'\\
+		E' &\to -TE' \mid \eps\\
+		T &\to D T'\\
+		T' &\to /DT' \mid \eps\\
+		D &\to a \mid b \mid (E).
+	\end{align*}
+	Now it is no lonegr left-recursive and may then be parsed by a recursive-descent parser.
+\end{example}
+
+\subsection{Determinism in RDP}
+RDP can be deterministic only if,
+\begin{itemize}
+	\item the input token lookahead uniquely determins the production to be applied,
+	\item we need to define the \emph{first} symbols that will be generated by each production.
+	\item in the presense of $\eps$ productions, symbols that can \emph{follow} a given non-terminal symbol also need to be specieifed.
+\end{itemize}
+
+\begin{definition}[Nullability]
+\item A nonterminal symbol $X$ is \emph{nullable} if it can derive the empty string, ie, $X \derives \eps$.
+	The following algorithm computes $\mathop{nullable}(X)$ for each non-terminal symbol. For convenience, $nullable$ is set to false for each terminal symbol.
+\end{definition}
+
+\begin{algorithm}[Nullable]
+	The weird-ass C++ code is
+\begin{minted}[escapeinside=||, mathescape=true]{cpp}
+vector<bool> nullable(CFG G) {
+	auto [N, T, P, S] = G;
+
+	vector<bool> res(N.size() + T.size());
+	for (auto a : T) res[a] = false;
+
+	for (auto X : N) res[X] = |$\exists X \to \eps \in P$|;
+
+	for (bool nullable_changed = true; nullable_changed; ) {
+		nullable_changed = false;
+		for (|$X \to \alpha_1 \dots \alpha_k \in P$|) { // this is a single production rule
+			if (res[|$\alpha_1$|] && res[|$\alpha_2$|] && |$\dots$| && res[|$\alpha_k$|]) { 
+			// all symbols are nullable
+				res[X] = true;
+				nullable_changed = true;
+			}
+		}
+	}
+	return res;
+}
+\end{minted}
+\end{algorithm}
+We are NOT just checking if $\eps$ is reachable from $X$ to $\eps$ if the CFG is viewed as a ``graph''.
+
+Actually, how do you view a CFG as a graph? Need a hypergraph I think. // think about this dum-dum
+
+\begin{definition}[First]
+	$first(\alpha)$ is the set of terminal symbols that can be the first symbol of any string that $\alpha$ can derive, ie, $a \in first(\alpha)$ if and only if there exists a derivation $\alpha \derives a x$ for any string of terminals $x$.
+\end{definition}
+
+\begin{algorithm}[First]
+	The weird-ass C++ code is
+\begin{minted}[escapeinside=||, mathescape=true]{cpp}
+vector<vector<symbol>> FIRST(CFG G) {
+	auto [N, T, P, S] = G;
+
+	vector<vector<symbol>> first;
+	for (auto a : T) first[a] = {a};
+
+	for (auto X : N) first[X] = {};
+
+	for (bool changed = true; changed; ) {
+		changed = false;
+		for (|$X \to \alpha_1 \dots \alpha_k \in P$|) { // this is a single production rule
+			for (int i = 1; i <= k; ++i) {
+				first[X].unite(first[|$\alpha_i$|]);
+				if (first[X] changed) changed = true;
+				if (!nullable[|$\alpha_i$|]) break;
+			}
+		}
+	}
+
+	return first;
+}
+\end{minted}
+\end{algorithm}
+
+\begin{definition}[Follows]
+	$follows(X)$ is the set of terminal symbols $a$ such that there exists a rightmost derivation of the form
+	\[S \derives \alpha X a \beta\]
+	for $\alpha, \beta \in (N \cup T)^*$, ie, $follow(X)$ is the set of all terminal symbols that can occur immediately to the right of $X$ in a \emph{rightmost} derivation.
+\end{definition}
+// Come up with an algorithm for this yourself! (though hypernotes do have it)
+
+
+\subsection{Pragmatics}
+// There's a PASCAL code here, add it later.
+
+\end{document}

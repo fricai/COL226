@@ -1,0 +1,180 @@
+\documentclass[a4paper]{scrartcl}
+
+\usepackage{minted}
+\usepackage{multicol}
+
+\usepackage{tikz}
+\usetikzlibrary{automata, positioning, arrows}
+\tikzset{
+	->, % makes the edges directed
+	>=stealth', % makes the arrow heads bold
+	node distance=3cm, % specifies the minimum distance between two nodes. Change if necessary.
+	every state/.style={thick, fill=gray!10}, % sets the properties for each ’state’ node
+	initial text=$ $, % sets the text that appears on the start arrow
+}
+
+\usepackage{amsthm, amssymb, amsmath}
+\usepackage{bm}
+
+\newtheorem{theorem}{Theorem}
+\newtheorem*{theorem*}{Theorem}
+\newtheorem{lemma}{Lemma}
+\newtheorem*{lemma*}{Lemma}
+
+\newtheorem{claim}{Claim}
+\newtheorem*{claim*}{Claim}
+
+\theoremstyle{definition}
+\newtheorem{definition}{Definition}
+\newtheorem*{definition*}{Definition}
+
+\newcommand{\eps}{\varepsilon}
+\newcommand{\card}[1]{\left\lvert #1 \right\rvert}
+
+\newcommand{\NN}{\mathbb N}
+
+\title{
+	Programming Languages: Lecture 15\\
+	I have no clue
+}
+\author{Rishabh Dhiman}
+\date{4 February 2022}
+
+\begin{document}
+\maketitle
+
+\section{Static}
+
+Before execution (runtime)
+\begin{itemize}
+	\item compile time
+	\item linking time
+	\item loading time
+\end{itemize}
+
+Context-sensitive analysis (static semantics)
+Type, size, requirements, scopes, etc.
+
+Static memory allocation.
+
+FORTRAN 4:
+All data sizes are known at compile-time, there is no nesting of subroutine or recursion.
+
+Memory allocation for all sub-routines and the main routine allocated at compile-time. Memory is divided up into essentialy disjoint units so that there is no overlap.
+
+\subsection{Static allocation}
+\begin{itemize}
+	\item[+] faster execution because there are no overheads due to fixed predefined address for all data
+	\item[-] inflexible
+	\item[-] does not allow for recursion or nested scoping
+	\item[-] wasterful over time because a lot of memory is simply lying idle and is not used.
+\end{itemize}
+Lot of weather-prediction programs currently used use FORTRAN because of \textit{speed}.
+
+\section{Dynamic}
+
+At execution-time (runtime), meaning of program.
+
+\subsection{Dynamic Memory Allocation}
+Almost all other languagws which support
+\begin{itemize}
+	\item nested scoping
+	\item recursion
+	\item dynamic data-structures
+	\item all OO, functional and declarative languages
+\end{itemize}
+
+Most algol languages, starting from ALGOL60.
+
+\begin{itemize}
+	\item[+] Flexible allocation at runtime
+	\item[+] Memory may be more optimally used on demand.
+	\item[-] Impossible to ascertain how much memory is actually required at any time, because it depends on the calling-chain at any instant of program execution.
+	\item[-] Impossible to ascertain how many recursive activations of a procdure or function may be required at any instant of time during execution.
+	\item[-] Impossible to ascertain how many different objects of various sizes need to be present simulataneously during runtime.
+\end{itemize}
+
+\section{Run-Time Environment}
+Memory for running a program is divided up as follows,
+
+\begin{itemize}
+	\item[\textbf{Code segment.}] This is where the \emph{object} code of the program resides.
+	\item[\textbf{Runtime stack.}] Required in a \emph{dynamic} memory management technique. Especially required in languages which support \emph{recursion}.
+		All data whose sizes can be determined \emph{statically} before loading is stored in an appropriate \emph{stack-frame} (activation road).
+	\item[\textbf{Heap.}] All data whose sizes are not determined statically and all data that is there is genreated at run time.
+\end{itemize}
+
+Consider the following program,
+\begin{minted}{text}
+// Main Program
+// global vars
+{
+	// Procedure P2
+	// Locals of P2
+	{
+		// Procedure P21
+		// Locals of P21
+		// Body of P21
+	}
+	// Body of P2
+}
+
+{
+	// Procedure P1
+	// Locals of P1
+	// Body of P1
+	
+	// Call P2
+}
+// Main body
+\end{minted}
+with the following calling chain,
+\[\text{Main} \to P1 \to P2 \to P21 \to P21.\]
+
+At the end of P2, all global variables must be present, P1 variables should still exist but shouldn't be accessible. P21 made a recursive call to P21, the same variables should be allocated again however, these should be allocated at a different location as before.
+
+The memory is divided up as follows,
+
+\begin{tikzpicture}
+
+\end{tikzpicture}
+
+When stack overflows heap, segmentation faults occur.
+
+The stackfram or activation record looks as follows,
+\begin{minted}{text}
+Return address to last of P21.
+	Dynamic link to last P2.
+Locals of P21.
+Static link to last P2.
+Formal par of P21.
+
+-----------
+Return address to last of P2.
+	Dynamic link to last P2.
+Locals of P21.
+Static link to last P21.
+Formal par of P21.
+
+-----------
+Return address to last of P1.
+	Dynamic link to last P1.
+Locals of P2.
+Static link to main.
+Formal par of P2.
+
+-----------
+Return address ot Main
+	Dynamic Link to main
+Locals of P1
+Static Link to Main
+Formal par of P1
+
+--------------
+Globals
+\end{minted}
+Address are all relative to the base address of an activation.
+
+The static link specifies the non-local referencing environment. It points to its `parent' in the scoping structure and tells what variables other than the local variables it's accessing and to get all these non-local variables we have to go through all these static links to the root, the number of transitions specify the nesting depth, 0 transitions -- local variables, etc.
+
+\end{document}

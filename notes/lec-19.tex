@@ -1,0 +1,50 @@
+\documentclass[a4paper]{scrartcl}
+
+\usepackage[T1]{fontenc}
+
+\usepackage{minted}
+\usepackage{multicol}
+
+\usepackage{todonotes}
+
+\usepackage{tikz}
+\usetikzlibrary{automata, positioning, arrows}
+\tikzset{
+	->, % makes the edges directed
+	>=stealth', % makes the arrow heads bold
+	node distance=3cm, % specifies the minimum distance between two nodes. Change if necessary.
+	every state/.style={thick, fill=gray!10}, % sets the properties for each ’state’ node
+	initial text=$ $, % sets the text that appears on the start arrow
+}
+
+\usepackage{amsthm, amssymb, amsmath}
+\usepackage{bm}
+
+\newtheorem{theorem}{Theorem}
+\newtheorem*{theorem*}{Theorem}
+\newtheorem{lemma}{Lemma}
+\newtheorem*{lemma*}{Lemma}
+
+\newtheorem{claim}{Claim}
+\newtheorem*{claim*}{Claim}
+
+\theoremstyle{definition}
+\newtheorem{definition}{Definition}
+\newtheorem*{definition*}{Definition}
+
+\newcommand{\eps}{\varepsilon}
+\newcommand{\card}[1]{\left\lvert #1 \right\rvert}
+
+\newcommand{\NN}{\mathbb N}
+
+\title{
+	Programming Languages: Lecture 19\\
+	Intermediate Representation and SDT
+}
+\author{Rishabh Dhiman}
+\date{22 February 2022}
+
+\begin{document}
+\maketitle
+
+\end{document}

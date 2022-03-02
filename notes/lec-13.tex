@@ -1,0 +1,73 @@
+\documentclass[a4paper]{scrartcl}
+
+\usepackage{minted}
+
+\usepackage{tikz}
+\usetikzlibrary{automata, positioning, arrows}
+\tikzset{
+	->, % makes the edges directed
+	>=stealth', % makes the arrow heads bold
+	node distance=3cm, % specifies the minimum distance between two nodes. Change if necessary.
+	every state/.style={thick, fill=gray!10}, % sets the properties for each ’state’ node
+	initial text=$ $, % sets the text that appears on the start arrow
+}
+
+\usepackage{amsthm, amssymb, amsmath}
+\usepackage{bm}
+
+\newtheorem{theorem}{Theorem}
+\newtheorem*{theorem*}{Theorem}
+\newtheorem{lemma}{Lemma}
+\newtheorem*{lemma*}{Lemma}
+
+\newtheorem{claim}{Claim}
+\newtheorem*{claim*}{Claim}
+
+\theoremstyle{definition}
+\newtheorem{definition}{Definition}
+\newtheorem*{definition*}{Definition}
+
+\newcommand{\eps}{\varepsilon}
+\newcommand{\card}[1]{\left\lvert #1 \right\rvert}
+
+\newcommand{\NN}{\mathbb N}
+
+\title{
+	Programming Languages: Lecture 13\\
+	I have no clue
+}
+\author{Rishabh Dhiman}
+\date{1 February 2022}
+
+\begin{document}
+\maketitle
+
+\section{Some Doubt}
+\begin{align*}
+	E &\to E - T \mid T\\
+	T &\to D \mathrel{/} T \mid D
+\end{align*}
+The rules imply that $-$ is left-associative and $/$ is right-associative. (what do these terms mean? F) $/$ has higher precedence.
+
+\section{Bottom-Up Parsing}
+\[X \to \beta \gamma\]
+// What does an LR(0) term signify?
+
+After a series of shifts and/or reductions eventually input sequence $y$ is consumed and transformed into $\gamma$. // What's a reduction?
+
+\subsection{Example}
+Consider the augmented grammar,
+\begin{align}
+	S &\to E\$\\
+	E &\to E - T\\
+	\\
+	\\
+	T &\to (E)
+\end{align}
+Look at the significance of all the ways to place the cursor on the rule.
+
+\section{Closure of Items}
+Theoretically, each item is a state of a NFA.
+
+// An algorithm here
+\end{document}

@@ -1,0 +1,135 @@
+\documentclass[a4paper]{scrartcl}
+
+\usepackage{minted}
+\usepackage{multicol}
+
+\usepackage{todonotes}
+
+\usepackage{tikz}
+\usetikzlibrary{automata, positioning, arrows}
+\tikzset{
+	->, % makes the edges directed
+	>=stealth', % makes the arrow heads bold
+	node distance=3cm, % specifies the minimum distance between two nodes. Change if necessary.
+	every state/.style={thick, fill=gray!10}, % sets the properties for each ’state’ node
+	initial text=$ $, % sets the text that appears on the start arrow
+}
+
+\usepackage{amsthm, amssymb, amsmath}
+\usepackage{bm}
+
+\newtheorem{theorem}{Theorem}
+\newtheorem*{theorem*}{Theorem}
+\newtheorem{lemma}{Lemma}
+\newtheorem*{lemma*}{Lemma}
+
+\newtheorem{claim}{Claim}
+\newtheorem*{claim*}{Claim}
+
+\theoremstyle{definition}
+\newtheorem{definition}{Definition}
+\newtheorem*{definition*}{Definition}
+
+\newcommand{\eps}{\varepsilon}
+\newcommand{\card}[1]{\left\lvert #1 \right\rvert}
+
+\newcommand{\NN}{\mathbb N}
+
+\title{
+	Programming Languages: Lecture 16\\
+	Introduction to Attributes and Attribute Grammars
+}
+\author{Rishabh Dhiman}
+\date{4 February 2022}
+
+\begin{document}
+\maketitle
+
+The CFG of a PL forms a framework for designing the back-end of the compiler in parts,
+\begin{itemize}
+	\item The concrete parse tree itself never actually needs to be generated.
+	\item It is conceptually helpful to think of it as the result of parsing.
+\end{itemize}
+
+Unlike the usual D\&C method,
+\begin{itemize}
+	\item here the division of the backend is in terms of the non-terminals, and
+	\item the grammatical rules of the language,
+	\item ``divide'' is more nuanced and the individual parts are also connected by rules and have overlaps.
+\end{itemize}
+
+The following are broadly classified as attributes (of some kind) that may have to be generated,
+\begin{itemize}
+	\item scope information,
+	\item type information,
+	\item relocatable memory address,
+	\item abstract syntax trees,
+	\item target code.
+\end{itemize}
+Practically everything done after parsing is an attribute.
+
+All of this came from Knuth's TeX compilation, it turned out to be general enough that it became a structure of a general compiler.
+
+\section{Abstract Syntax Trees}
+The construction of ASTs frmom concrete parse trees is an example of a transforamtion that can be perfuromed using a synax-directed definition that has no side-effects.
+
+An attribute grammar is a formal way to define semantic rules and context-sensitive aspects of the language. Each production of the grammar is associated with a set of values or semantic rules. These values and semantic rules are collectively referred to as attributes.
+
+\section{Abstract Syntax}
+Shift-reduce parsing produces a concrete syntax tree from the rightmost derivation. The syntax tree is concrete in the sense that
+\begin{itemize}
+	\item It contains a lot of redundant symbols that are important or useful only during the parsing stage.
+	\item brackets of various kinds.
+\end{itemize}
+
+Every PL construct is possibly an operator.
+
+A program regarded as an AST is simply a composition of operators.
+
+\subsection{Imperative Approach}
+We use an attribute grammar rules to construct the AST from the parse tree.
+
+We define two procedures first
+\begin{itemize}
+	\item \mintinline{sml}{makeLeaf(literal)} makes a leaf node from the given literal.
+	\item \mintinline{sml}{makeBinaryNode(opr, opd1, opd2)} createts a node with label \emph{opr} (with fields which point to \emph{opd1} and \emph{opd2}) and returns a pointer or reference to the newly created node.
+\end{itemize}
+Now we may associate a synthesized attribute called \emph{ptr} with each terminal and nonterminal symbol which points to the root of the subtree created for it.
+
+\subsection{Functional Approach}
+We use attribute grammar rules to construct the abstract syntax tree functionally from the parse tree.
+
+\subsection{Alternative Functional}
+In languages which support algebraic (abstract) datatypes, the functions \mintinline{sml}{makeLeaf} and \mintinline{sml}{makeBinaryNode} may be replaced by the constructors of an appropriate recursively defined datatype AST.
+
+Synthesized and inherited attributes to make \emph{information flow} from one part of the grammar to another
+
+\section{Attributes}
+The value of an attribute at a parse-tree node is defined by the semantic rule associated with the production used at that node.
+
+\section{The Structure of a Compiler}
+\begin{itemize}
+	\item Syntax-Directed Definitions (SDD)
+	\item Divide and Conquer
+	\item Glue code
+\end{itemize}
+
+\subsection{Syntax-Directed Definitions}
+Syntax-Directed definitions are high-level specifications which specify the eval-
+uation of various attributes and procedures.
+
+They hide various implementation details and free the compiler writer from
+explicitly defining the order in which translation, transformations, and code
+generation take place.
+
+\section{Kinds of Attributes}
+\begin{itemize}
+	\item \textbf{Synthesized Attributes.} A \emph{synthesized} attribute is one whose value depends upon the values of its immediate children in the concrete parse tree.
+
+		An SDD that usese only synthesized attributes is called an \emph{S-attributed} definition.
+	\item \textbf{Inherited Attributes.} An inherited attributed is one whose value depends upon the values of the attributes of its parents or siblings in the parse tree.
+
+	Inherited attributes are convenient for expressing the dependence of a language construct on the \emph{context} in which it appears.
+\end{itemize}
+
+\end{document}

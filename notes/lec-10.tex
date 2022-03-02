@@ -1,0 +1,123 @@
+\documentclass[a4paper]{scrartcl}
+
+\usepackage[T1]{fontenc}
+
+\usepackage{minted}
+
+\usepackage{syntax}
+
+\usepackage{tikz}
+\usetikzlibrary{automata, positioning, arrows}
+\tikzset{
+	->, % makes the edges directed
+	>=stealth', % makes the arrow heads bold
+	node distance=3cm, % specifies the minimum distance between two nodes. Change if necessary.
+	every state/.style={thick, fill=gray!10}, % sets the properties for each ’state’ node
+	initial text=$ $, % sets the text that appears on the start arrow
+}
+
+\usepackage{amsthm, amssymb, amsmath}
+\usepackage{bm}
+
+\newtheorem{theorem}{Theorem}
+\newtheorem*{theorem*}{Theorem}
+\newtheorem{lemma}{Lemma}
+\newtheorem*{lemma*}{Lemma}
+
+\newtheorem*{example}{Example}
+\newtheorem*{exercise}{Exercise}
+\newtheorem*{notation}{Notation}
+
+\newtheorem{claim}{Claim}
+\newtheorem*{claim*}{Claim}
+
+\theoremstyle{definition}
+\newtheorem{definition}{Definition}
+\newtheorem*{definition*}{Definition}
+
+\newcommand{\eps}{\varepsilon}
+\newcommand{\card}[1]{\left\lvert #1 \right\rvert}
+
+\newcommand{\NN}{\mathbb N}
+
+\title{
+	Programming Languages: Lecture 10\\
+	Syntax Specifications of Programming Languages
+}
+\author{Rishabh Dhiman}
+\date{25 January 2022}
+
+\begin{document}
+\maketitle
+
+\section{Extended Backus-Naur Form}
+BNF is a CFG specification. Extended comes from its use of regex operators like Kleene Closure and optional specifier.
+
+EBNF specification is a collection of rules which defines the CFG of a language.
+
+PLs in general are Turing-complete. However, CFG cannot specify a Turing machine. So it tends to encode context-sensitive features too.
+
+The syntax analysis of CSGs is very complex.
+However, we want parsing to be quick, low-order polynomial time, ideally linear.
+
+Parsing CFGs can be made quick, the language \emph{specification} gives rules for parsing, along with this there are language manual which explains the semantics of these languages. The \emph{semantics} contain context-sensitive features.
+
+The EBNF rules are as follows,
+\begin{enumerate}
+	\item[Start Symbol.] The very first rule gives the productions of the start symbol of the grammar.
+	\item[Non-terminals.] Uses English words or phrases to denote non-terminal symbols. The words or phrases are chosen to be suggestive of the nature or meaning of the constructors.
+	\item[Metasymbols.]
+		\begin{itemize}
+			\item Sequences of constructs enclosed in `\{' and `\}' denote zero or more occurences of the construct (c.f. Kleene Clsoure on regex)
+			\item Sequences of constructs enclosed in `[' and `]' are optional, ie, there only be zero or one occurence of the sequence
+			\item Constructs are enclosed in `(' and `)' to group them together.
+			\item `\textbar' separates alternatives.
+			\item `::=' defines the productions of each non-terminal symbol.
+			\item `.' terminates the possibly many rewrite rules for a non-terminal.
+		\end{itemize}
+\end{enumerate}
+The same ASCII alphabet is used as both alphabet and operator.
+
+\subsection{Balanced Paranthesis}%
+Consider the CFG $BP_3$ given by
+\[S \to \eps \mid (S)S \mid [S]S \mid \{S\}S.\]
+
+In EBNF, it will be given by
+\setlength{\grammarindent}{10em}
+\begin{grammar}
+	<BracketSeq> ::= \{<Bracket>\}
+
+	<Bracket> ::= <LeftParen> <BracketSeq> <RightParen>
+	\alt <LeftSqbracket> <BracketSeq> <RightSqbracket>
+	\alt <LeftBrace> <BracketSeq> <RightBrace>
+
+	<LeftParen> ::= `('
+
+	<RightParen> ::= `)'
+
+	<LeftSqbracket> ::= `['
+
+	<RightSqbracket> ::= `]'
+
+	<RightBrace> ::= `\{'
+
+	<LeftBrace> ::= `\{'
+\end{grammar}
+You can sepcify EBNF in EBNF, see the hypernotes.
+
+In the olden days we used to enclose EBNF symbols in <>, it's called ASCII-EBNF.
+
+The EBNF of prolog can be fit in just two slides, again see hypernotes.
+
+\section{Regex as a Language}
+Given a nonempty finite alphabet A,
+\begin{itemize}
+	\item every regular language over $A$ is also context-free
+	\item the set of regular expression over $A$ is not regular but is context-free
+\end{itemize}
+This is because of arbitrary nesting and they have associativity and precedence rules.
+
+Both the alphabet of regex and operators of REGEXP(A) happen to be the same.
+
+// There's a tangent about lexical generators here. Go over it when you have the time.
+\end{document}

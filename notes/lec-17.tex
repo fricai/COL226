@@ -1,0 +1,74 @@
+\documentclass[a4paper]{scrartcl}
+
+\usepackage{minted}
+\usepackage{multicol}
+
+\usepackage{todonotes}
+
+\usepackage{tikz}
+\usetikzlibrary{automata, positioning, arrows}
+\tikzset{
+	->, % makes the edges directed
+	>=stealth', % makes the arrow heads bold
+	node distance=3cm, % specifies the minimum distance between two nodes. Change if necessary.
+	every state/.style={thick, fill=gray!10}, % sets the properties for each ’state’ node
+	initial text=$ $, % sets the text that appears on the start arrow
+}
+
+\usepackage{amsthm, amssymb, amsmath}
+\usepackage{bm}
+
+\newtheorem{theorem}{Theorem}
+\newtheorem*{theorem*}{Theorem}
+\newtheorem{lemma}{Lemma}
+\newtheorem*{lemma*}{Lemma}
+
+\newtheorem{claim}{Claim}
+\newtheorem*{claim*}{Claim}
+
+\theoremstyle{definition}
+\newtheorem{definition}{Definition}
+\newtheorem*{definition*}{Definition}
+
+\newcommand{\eps}{\varepsilon}
+\newcommand{\card}[1]{\left\lvert #1 \right\rvert}
+
+\newcommand{\NN}{\mathbb N}
+
+\title{
+	Programming Languages: Lecture 17\\
+	Synthesized and Inherited Attributes
+}
+\author{Rishabh Dhiman}
+\date{10 February 2022}
+
+\begin{document}
+\maketitle
+
+\section{Forms of SDDs}
+In an SDD, each grammar production rule $X \to \alpha$ associated with it a set of semantic rules of the form $b = f(a_1, \dots, a_k)$ where $a_1, \dots, a_k$ are attributes belonging to $X$ and/or the grammar symbols of $\alpha$.
+
+\begin{definition}
+	Given a productions $X \to \alpha$, an attributed $a$ is
+	\begin{itemize}
+		\item[\textbf{synthesized:}] synthesized attribute of $X$ (denoted by $X.a$) or,
+		\item[\textbf{inherited:}] inherited attribute of one of the grammar symbols of $\alpha$ (denoted by $B.a$ if $a$ is an attribute of $B$)
+	\end{itemize}
+\end{definition}
+
+\section{Attribute Grammars}
+An attribute grammar is an SDD in which the functions in semantic rules can have no side-effects.
+
+The attribute grammar also specifies how the attributes are propagated through the grammar, by using graph dependency between the productions.
+
+In general different occurrences of the same non-terminal symbol in each production will be distinguished by appropriate subscripts when defining the semantic rules associated with the rule.
+
+\section{Attributes: Basic Assumptions}
+\begin{itemize}
+	\item Terminal symbols are assumed to have only synthesized attributes. Their
+attributes are all supplied by the lexical analyser during scanning.
+\item The start symbol of the grammar can have only synthesized attributes.
+	\item In the case of LR parsing with its special start symbol, the start symbol
+cannot have any inherited attributes.
+\end{itemize}
+\end{document}

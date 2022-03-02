@@ -120,6 +120,9 @@ fun step (code, c, mem) =
     | incorrectOpcode => printError c "illegal opcode encountered\n"
     | codeSubscript => printError c "non-existent line referenced\n"
     | Subscript => printError c "out-of-bounds memory accessed\n"
+    | Overflow => printError c "integer overflow\n"
+    | Div => printError c "division by zero\n"
+    
 
 fun get_quadruple s =
     if (String.sub(s, 0) <> #"(" orelse String.sub(s, (size s) - 1) <> #")")

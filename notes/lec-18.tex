@@ -1,0 +1,83 @@
+\documentclass[a4paper]{scrartcl}
+
+\usepackage[T1]{fontenc}
+
+\usepackage{minted}
+\usepackage{multicol}
+
+\usepackage{todonotes}
+
+\usepackage{tikz}
+\usetikzlibrary{automata, positioning, arrows}
+\tikzset{
+	->, % makes the edges directed
+	>=stealth', % makes the arrow heads bold
+	node distance=3cm, % specifies the minimum distance between two nodes. Change if necessary.
+	every state/.style={thick, fill=gray!10}, % sets the properties for each ’state’ node
+	initial text=$ $, % sets the text that appears on the start arrow
+}
+
+\usepackage{amsthm, amssymb, amsmath}
+\usepackage{bm}
+
+\newtheorem{theorem}{Theorem}
+\newtheorem*{theorem*}{Theorem}
+\newtheorem{lemma}{Lemma}
+\newtheorem*{lemma*}{Lemma}
+
+\newtheorem{claim}{Claim}
+\newtheorem*{claim*}{Claim}
+
+\theoremstyle{definition}
+\newtheorem{definition}{Definition}
+\newtheorem*{definition*}{Definition}
+
+\newcommand{\eps}{\varepsilon}
+\newcommand{\card}[1]{\left\lvert #1 \right\rvert}
+
+\newcommand{\NN}{\mathbb N}
+
+\title{
+	Programming Languages: Lecture 18\\
+	Symbol Tables and Immediate Representation
+}
+\author{Rishabh Dhiman}
+\date{11 February 2022}
+
+\begin{document}
+\maketitle
+
+\section{Symbol Table}
+\begin{itemize}
+	\item The store house of context-sensitive and run-time information about every
+identifier in the source program.
+	\item All accesses relating to an identifier require to first find the attributes of the
+identifier from the symbol table
+	\item Usually organized as a hash table - provides fast access.
+	\item Compiler-generated temporaries may also be stored in the symbol table
+\end{itemize}
+
+Attributes stored in a symbol table for each identifier,
+\begin{itemize}
+	\item type
+	\item size
+	\item scope/visibility information
+	\item base address
+	\item addresses to location of auxiliary symbol tables
+	\item address of the location containing the string which actually names the identifier and its length in the string pool
+\end{itemize}\todo{go back and watch or read this portion again}
+
+\section{Intermediate Representation}
+IR are important for reasons of portability, ie, platform independence.
+
+\begin{itemize}
+	\item No commitment to word boundaries or byte boundaries.
+	\item No commitment to representation of,
+		\begin{itemize}
+			\item int vs. float
+			\item float vs. double,
+			\item packed vs. unpacked,
+			\item strings -- where and how?
+		\end{itemize}
+\end{itemize}
+\end{document}
