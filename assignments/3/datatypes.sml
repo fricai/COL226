@@ -3,14 +3,13 @@ struct
   datatype
       Prog   = PROG of string * Blk
   and Blk    = BLK of (Dec list) * (Cmd list)
-  and Dec    = INT     of Var
-             | BOOL    of Var
-  and Cmd    = SET     of Var * Exp
-             | READ    of Var
+  and Dec    = INT     of string
+             | BOOL    of string
+  and Cmd    = SET     of string * Exp
+             | READ    of string
              | WRITE   of Exp
              | ITE     of Exp * (Cmd list) * (Cmd list)
              | WH      of Exp * (Cmd list)
-  and Var    = string
   and Exp    = (* boolean operations *)
                AND     of Exp * Exp
              | OR      of Exp * Exp
@@ -29,8 +28,8 @@ struct
              | DIV     of Exp * Exp
              | MOD     of Exp * Exp
              (* terminals *)
-             | INTVAR  of Var
+             | INTVAR  of string
              | INTVAL  of int
-             | BOOLVAR of Var
+             | BOOLVAR of string
              | BOOLVAL of bool
 end;
