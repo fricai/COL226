@@ -1,75 +1,135 @@
-(* pi.yacc
-   Grammar used in User's Guide to ML-Lex and ML-Yacc
-   Copyright (C) 2004 Roger Price
-
-   This program is free software; you can redistribute it and/or
-   modify it under the terms of the GNU General Public License
-   as published by the Free Software Foundation; either version 2
-   of the License, or (at your option) any later version.
-
-   This program is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   GNU General Public License for more details.
-
-   You should have received a copy of the GNU General Public License
-   along with this program; if not, write to the Free Software
-   Foundation, Inc., 59 Temple Place - Suite 330, 
-   Boston, MA  02111-1307, USA.
- *)
-
-open DataTypes
+open AST
 %%
-%name Pi
-%term CARET
-    | DVBAR
-    | EOF
-    | EQUALS
-    | IDE        of string
+%name While
+
+%term PROGRAM
+    | VAR
+    | INT
+    | BOOL
+    | READ
+    | WRITE
+    | IF
+    | THEN
+    | ELSE
+    | ENDIF
+    | WHILE
+    | DO
+    | ENDWH
+    | TT
+    | FF
+    | NOT
+    | AND
+    | OR
+    | LT
+    | LEQ
+    | EQ
+    | NEQ
+    | GT
+    | GEQ
+    | PLUS
+    | MINUS
+    | NEGATIVE
+    | TIMES
+    | DIV
+    | MOD
+    | ASSIGN
+    | COMMA
+    | SEMICOLON
+    | DOUBLECOLON
+    | COLON
+    | IDENTIFIER      of string
     | ILLCH
-    | INPUT
-    | LPAR
-    | NEW
-    | OUTPUT
-    | RPAR
-%nonterm abs          of A
-       | begin        of Pi
-       | procList     of Proc list
-       | parallel     of Proc list
-       | pat          of Pat
-       | path         of Path
-       | pi           of Proc list
-       | proc         of Proc
-       | value        of V
+    | INTCONST        of int
+    | ADDOP
+    | MULOP
+    | BOOLOP
+    | RELOP
+    | LPAREN
+    | RPAREN
+    | LBRACE
+    | RBRACE
+    | EOF
+
+%nonterm begin        of Prog
+       | block        of Blk
+       | declarationseq of Dec list
+       | declaration  of Dec list
+       | varlist      of Var list
+       | variable     of Var
+       | commandseq   of Cmd list
+       | commandseqend of Cmd list
+       | command      of Cmd
+       | expression   of Exp
+       | addop        of (Exp * Exp -> Exp)
+       | mulop        of (Exp * Exp -> Exp)
+       | relop        of (Exp * Exp -> Exp)
+       | boolop       of (Exp * Exp -> Exp)
+
 %pos int
+
 %eop EOF
 %noshift EOF
-%nonassoc DVBAR EOF EQUALS ILLCH INPUT LPAR NEW OUTPUT RPAR
+
+%left     BOOLOP
+%nonassoc RELOP
+%left     ADDOP
+%left     MULOP
+%right    NEGATIVE NOT
+
 %nodefault
 %verbose
-%keyword NEW
 %arg (fileName) : string
 
 %%
-begin: procList         ((Pi procList))
+begin:
+PROGRAM IDENTIFIER DOUBLECOLON block    (PROG(IDENTIFIER, block))
 
-abs: pat EQUALS proc    ((A (pat,proc)))
+block:
+declarationseq commandseq               (BLK(declarationseq, commandseq))
 
-procList: proc procList ((proc::procList))
-|                       ([])
+declarationseq:
+  declaration declarationseq            (declaration @ declaration)
+| declaration                           (declaration)
 
-parallel: 
-  proc DVBAR parallel   ((proc::parallel))
-| proc RPAR             ([proc])
-| RPAR                  ([])
+declaration:
+  VAR varlist COLON INT                 (map INT  varlist)
+| VAR varlist COLON BOOL                (map BOOL varlist)
 
-pat: path               ((Pat path))
-path: IDE               ((Name (IDE,fileName,IDEleft,IDEright)))
+varlist:
+  variable COMMA varlist                (variable::varlist)
+| variable                              ([variable])
 
-proc:
-  NEW path proc         ((New (path,proc)))
-| path OUTPUT value     ((Output (path,value)))
-| path INPUT abs        ((Input (path,abs)))
-| LPAR parallel         ((Parallel parallel))
+variable: IDENTIFIER                    (IDENTIFIER)
 
-value: path             ((V path))
+commandseq:
+  LBRACE commandseqend                  (commandseqend)
+
+commandseqend:
+  command SEMICOLON commandseqend       (command::commandseqend)
+| RBRACE                                ([])
+
+command:
+  variable ASSIGN expression            (SET(variable, expression))
+| READ variable                         (READ(variable))
+| WRITE expression                      (WRITE(expression))
+| IF expression THEN commandseq ELSE commandseq
+                                        (ITE(expression, commandseq1, commandseq2))
+| WHILE expression DO commandseq ENDWH  (WH(expression, commandseq))
+
+expression:
+  expression addop expression            %prec ADDOP    (addop(expression1, expression2))
+| expression boolop expression           %prec BOOLOP   (boolop(expression1, expression2))
+| expression mulop expression            %prec MULOP    (mulop(expression1, expression2))
+| expression relop expression            %prec RELOP    (relop(expression1, expression2))
+| NEGATIVE expression                    %prec NEGATIVE (NEGATIVE(expression))
+| NOT expression                         %prec NOT      (NOT(expression))
+| LPAREN expression RPAREN                              (expression)
+| variable                                              (VAR(variable))
+| INTCONST                                              (INTVAL(INTCONST))
+| TT                                                    (BOOLVAL(true))
+| FF                                                    (BOOLVAL(false))
+
+addop:  PLUS (PLUS) | MINUS (MINUS)
+mulop:  TIMES (TIMES) | DIV (DIV) | MOD (MOD)
+boolop: AND (AND) | OR (OR)
+relop:  LT (LT) | LEQ (LEQ) | EQ (EQ) | GT (GT) | GEQ (GEQ) | NEQ (NEQ)

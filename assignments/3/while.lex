@@ -72,20 +72,25 @@ val HashTable = Array.array(TableSize,nil) :
       ("<>",      T.NEQ),
       ("+",       T.PLUS),
       ("-",       T.MINUS),
+      ("~",       T.NEGATIVE),
       ("*",       T.TIMES),
       ("/",       T.DIV),
       ("%",       T.MOD),
       (":=",      T.ASSIGN)
       (";",       T.SEMICOLON),
       ("::",      T.DOUBLECOLON),
-      (":",       T.COLON)
+      (":",       T.COLON),
+      ("(",       T.LPAREN),
+      (")",       T.RPAREN),
+      ("{",       T.LBRACE),
+      ("}",       T.RBRACE)
      ])
   end
 open KeyWord
 
 %%
 %header (functor WhileLexFun(structure Tokens: While_TOKENS));
-%arg (fileName:string);
+%arg (fileName: string);
 alpha         = [A-Za-z];
 digit         = [0-9];
 alphanum      = ({alpha}|{digit});
@@ -95,13 +100,19 @@ eol           = ("\013\010"|"\010"|"\013");
 %%
 {ws}*      => (continue());
 {eol}      => (lin := (!lin) + 1; eolpos := yypos + size yytext; continue());
+{digit}+ => (
+                     col := yypos - (!eolpos);
+                     T.INTCONST(valOf(Int.fromString yytext), !lin, !col)
+              );
 {alpha}{alphanum}*   => (
-		case find yytext of
-		SOME key => (col := yypos - (!eolpos); key(!lin, !col))
-		| _      => (col := yypos - (!eolpos); T.IDE(yytext, !lin, !col))
+                     col := yypos - (!eolpos);
+		     case find yytext of
+		          SOME key => key(!lin, !col) (* for keywords *)
+			  | _      => T.IDENTIFIER(yytext, !lin, !col) (* is a variable name *)
 	      );
-.          => (
+.           => (
+		col := yypos - (!eolpos);
 		case find yytext of
-		SOME v   => (col := yypos - (!eolpos); v(!lin, !col))
-		| _      => (col := yypos - (!eolpos); T.ILLCH(yytext, !lin, !col))
-	      );
+		     SOME op => op(!lin, !col)      (* for operators *)
+		     | _      => (badCh(fileName, yytex, !lin, !col); T.ILLCH(!lin, !col))
+              );
