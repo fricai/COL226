@@ -215,9 +215,15 @@ Note that I decided not to implement checks for types, and declaration of variab
 
 ## Other Implementation Decisions
 
-I decided to use a KeyWords structure containing the list of keywords in the ML-Lex file to make it easier to work with keywords.
+I decided to use a KeyWords structure containing a list of keywords in the ML-Lex file to make it easier to work with keywords.
 
 The program uses an SML Compilation Manager file, `while.cm`, to make it easier to load all the required files.
 
 ## Acknowledgements
-- [User’s Guide to ML-Lex and ML-Yacc](http://rogerprice.org/ug/ug.pdf) for explaining the workings of ML-Yacc and ML-Lex. `glue.sml`, `compiler.sml` and boilerplate code for `while.lex` and `while.yacc` were largely created by modifying the `pi` example code given here.
+
+- [User’s Guide to ML-Lex and ML-Yacc](http://rogerprice.org/ug/ug.pdf) for explaining the workings of ML-Yacc and ML-Lex.
+- `glue.sml`, `compiler.sml`, `while.cm` and boilerplate code for `while.lex` and `while.yacc` were largely created by modifying the `pi` example code given above. The changes made were
+	- Changes of instances of `Pi` to `While` in struct, signatures, functions, variables, etc.
+	- Other than above, no changes were made to `while.cm`, `glue.sml` and `compiler.sml`.
+	- The code in ML-Lex user declarations is largely the same, barring the addition of `overflowError` and replacing the custom hash table with a simple list.
+	- While `pi.yacc` was used as the template when writing `while.yacc`, it has been nearly completely rewritten.
