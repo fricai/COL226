@@ -1,4 +1,6 @@
-# Parser and Lexer Generator for WHILE Language
+# Parser and Lexer for WHILE
+
+This project is a parser and a lexer for the WHILE programming language made using ML-Lex and ML-Yacc.
 
 ## Usage Instructions
 
@@ -138,44 +140,84 @@ end;
 ## Syntax-directed translation
 
 ```ebnf
-begin          = "program" identifier "::" block
-block          = declarationseq commandseq
-declarationseq = {declaration}
-declaration    = "var" varlist ":" type
-type           = "int" | "bool"
-varlist        = variable {"," variable}
-variable       = identifier
-commandseq     = "{" {command ";"} "}"
-command        = variable ":=" expression
-               | "read" variable
-	       | "write" expression
-	       | "if" expression "then" commandseq "else" commandseq "endif"
-	       | "while" expression "do" commandseq "endwh"
-expression     = expression addop expression
-               | expression boolop expression
-	       | expression mulop expression
-	       | expression relop expression
-	       | "(" expression ")"
-	       | unaryop expression
-               | integer
-	       | "tt" | "ff"
-integer        = digit{digit}
-identifier     = letter{letter | digit}
-unaryop        = "~" | "!"
-mulop          = "*" | "/" | "%"
-addop          = "+" | "-"
-relop          = "<" | "<=" | "=" | "<>" | ">=" | ">"
-boolop         = "&&" | "||"
+begin          = "program" identifier "::" block => AST.PROG(identifier, block)
+block          = declarationseq commandseq       => AST.BLK(declarationseq, commandseq)
+declarationseq = {declaration}                   => flattened list of declarations
+declaration    = "var" varlist ":" type          => list of type(variable)
+type           = "int"                           => AST.INT
+               | "bool"                          => AST.BOOL
+varlist        = variable {"," variable}         => list of variables
+variable       = identifier                      => identifier
+commandseq     = "{" {command ";"} "}"           => list of commands
+command        = variable ":=" expression        => AST.SET(variable, expression)
+               | "read" variable                 => AST.READ(variable)
+	       | "write" expression              => AST.WRITE(expression)
+	       | "if" expression "then" commandseq1
+		 "else" commandseq2 "endif"      => AST.ITE(expression, commandseq1, commandseq2)
+	       | "while" expression "do" commandseq
+	         "endwh"                         => AST.WH(expression, commandseq)
+expression     = expression1 addop expression2   => addop(expression1, expression2)
+               | expression1 boolop expression2  => boolop(expression1, expression2)
+	       | expression1 mulop expression2   => mulop(expression1, expression2)
+	       | expression1 relop expression2   => relop(expression1, expression2)
+	       | "(" expression ")"              => expression
+	       | unaryop expression              => unaryop(expression)
+	       | variable                        => AST.VAR(variable)
+               | integer                         => AST.INTVAL integer
+	       | "tt"                            => AST.BOOLVAL true
+	       | "ff"                            => AST.BOOLVAL false
+integer        = digit{digit}                    => int representing the value
+identifier     = letter{letter | digit}          => string of letters and digits
+unaryop        = "~"                             => AST.NEGATIVE
+               | "!"                             => AST.NOT
+mulop          = "*"                             => AST.TIMES
+               | "/"                             => AST.DIV
+	       | "%"                             => AST.MOD
+addop          = "+"                             => AST.PLUS
+               | "-"                             => AST.MINUS
+relop          = "<"                             => AST.LT
+               | "<="                            => AST.LEQ
+	       | "="                             => AST.EQ
+	       | "<>"                            => AST.NEQ
+	       | ">="                            => AST.GEQ
+	       | ">"                             => AST.GT
+boolop         = "&&"                            => AST.AND
+               | "||"                            => AST.OR
 ```
 
+### Auxiliary functions and Data
 
+Along with the datatypes and constructors defined in the problem statement.
+I made the following changes to the AST,
 
-## Auxiliary functions and Data
-
+- A `type Var = string` to make the code easier to read.
+- A singular datatype `Exp` rather than separate `IEXP` and `BEXP` constructors. Its constructors are those specified in the problem statement, along with the additional constructors,
+	- `NEGATIVE` to represent the unary minus.
+	- `VAR` to represent a terminal node containing a variable.
+	- `INTVAL` to represent a terminal node containing a constant integer.
+	- `BOOLVAL` to represent a terminal node containing a constant boolean.
+- A command or declaration list was used for sequencing instead of the constructor `SEQ`.
+- `TT` and `FF` were no longer needed due to `BOOLVAL`.
 
 ## Other Design Decisions
 
+My design majorly differs from the syntax as specified by the EBNF in the following ways:
+
+1. Relational operators make sense for boolean expressions too, as specified in the problem statement.
+2. Boolean and integer expressions are no longer separate terminals.
+3. Unary plus is not supported, due to ambiguities in the grammar and no reasonable way to resolve this in ML-Yacc.
+4. Unary minus, `~`, is always applied to an expression rather than integer constant due to the same reasons as above.
+That is, `~12` as part of an expression is parsed as `AST.NEGATIVE(AST.INTVAL 12)` rather than `AST.INTVAL ~12`.
+
+Along with this, relational operators are _not_ associative so `A < B < C` when `A`, `B` are `int` and `C` is `bool` is _not_ evaluated as `(A < B) < C`, rather an error is thrown.
+
+Note that I decided not to implement checks for types, and declaration of variable before use at this stage. There's no convenient way to do this in a single pass using the features ML-Yacc offers. It would be better to do this after the parse tree has been generated.
+
 ## Other Implementation Decisions
 
-## Acknowledgements
+I decided to use a KeyWords structure containing the list of keywords in the ML-Lex file to make it easier to work with keywords.
 
+The program uses an SML Compilation Manager file, `while.cm`, to make it easier to load all the required files.
+
+## Acknowledgements
+- [User’s Guide to ML-Lex and ML-Yacc](http://rogerprice.org/ug/ug.pdf) for explaining the workings of ML-Yacc and ML-Lex. `glue.sml`, `compiler.sml` and boilerplate code for `while.lex` and `while.yacc` were largely created by modifying the `pi` example code given here.
