@@ -76,7 +76,6 @@ open AST
 %left     MULOP
 %right    NEGATIVE NOT
 
-%nodefault
 %verbose
 %arg (fileName) : string
 
@@ -117,7 +116,14 @@ command:
 | WHILE expression DO commandseq ENDWH  (WH(expression, commandseq))
 
 expression:
-  variable                                              (VAR(variable))
+  expression addop expression            %prec ADDOP    (addop(expression1, expression2))
+| expression boolop expression           %prec BOOLOP   (boolop(expression1, expression2))
+| expression mulop expression            %prec MULOP    (mulop(expression1, expression2))
+| expression relop expression            %prec RELOP    (relop(expression1, expression2))
+| NEGATIVE expression                    %prec NEGATIVE (NEGATIVE(expression))
+| NOT expression                         %prec NOT      (NOT(expression))
+| LPAREN expression RPAREN                              (expression)
+| variable                                              (VAR(variable))
 | INTCONST                                              (INTVAL(INTCONST))
 | TT                                                    (BOOLVAL(true))
 | FF                                                    (BOOLVAL(false))

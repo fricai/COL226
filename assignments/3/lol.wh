@@ -1,7 +1,7 @@
 program lol ::
  var A : int;
- var B:                          
-         bool;
+ var B:
+                                                    bool;
  {
-  A := 5;
+  C := 1 < tt;
  }
