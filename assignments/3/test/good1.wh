@@ -1,15 +1,15 @@
-program lol ::
+program good1 ::
  var A : int;
- var B:
+ var unkownmothergoose:
                                                     bool;
  {
   if (5 < 3) then {
-   A := B;
+   A := unknownmothergoose;
   } else {
    C := D;
    while (P < Q) do {
      X := Y;
    } endwh;
-  };
+  } endif;
   A := 1 < tt;
  }

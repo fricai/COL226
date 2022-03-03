@@ -16,7 +16,7 @@ fun compile (fileName) =
              print (fileName^"["^Int.toString line^":"
                                 ^Int.toString col^"] "^msg^"\n");
 
-        val _ = Compiler.Control.Print.printDepth:=12;
+        val _ = Compiler.Control.Print.printDepth := 1024;
         val (tree,rem) = WhileParser.parse 
                      (15,
                      (WhileParser.makeLexer grab fileName),

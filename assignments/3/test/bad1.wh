@@ -1,0 +1,15 @@
+program bad1 ::
+ var A : int;
+ var unkown_mother_goose:
+                                                    bool;
+ {
+  if (5 < 3) then {
+   A := unknown_mother_goose;
+  } else {
+   C := D;
+   while (P < Q) do {
+     X := Y;
+   } endwh;
+  } endif;
+  A := 1 < tt;
+ }

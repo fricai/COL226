@@ -65,15 +65,18 @@ open AST
        | relop        of (Exp * Exp -> Exp)
        | boolop       of (Exp * Exp -> Exp)
 
+%keyword PROGRAM VAR INT BOOL READ WRITE IF THEN ELSE ENDIF WHILE DO ENDWH TT FF
+
 %pos int
+%start begin
 
 %eop EOF
 %noshift EOF
 
-%left     BOOLOP
-%nonassoc RELOP
-%left     ADDOP
-%left     MULOP
+%left     BOOLOP AND OR
+%nonassoc RELOP LT LEQ EQ NEQ GT GEQ
+%left     ADDOP PLUS MINUS
+%left     MULOP TIMES DIV MOD
 %right    NEGATIVE NOT
 
 %verbose
@@ -111,7 +114,7 @@ command:
   variable ASSIGN expression            (SET(variable, expression))
 | READ variable                         (READ(variable))
 | WRITE expression                      (WRITE(expression))
-| IF expression THEN commandseq ELSE commandseq
+| IF expression THEN commandseq ELSE commandseq ENDIF
                                         (ITE(expression, commandseq1, commandseq2))
 | WHILE expression DO commandseq ENDWH  (WH(expression, commandseq))
 

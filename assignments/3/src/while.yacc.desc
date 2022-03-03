@@ -1,0 +1,1044 @@
+
+state 0:
+
+	begin : . PROGRAM IDENTIFIER DOUBLECOLON block 
+
+	PROGRAM	shift 1
+
+	begin	goto 77
+
+	.	error
+
+
+state 1:
+
+	begin : PROGRAM . IDENTIFIER DOUBLECOLON block 
+
+	IDENTIFIER	shift 2
+
+
+	.	error
+
+
+state 2:
+
+	begin : PROGRAM IDENTIFIER . DOUBLECOLON block 
+
+	DOUBLECOLON	shift 3
+
+
+	.	error
+
+
+state 3:
+
+	begin : PROGRAM IDENTIFIER DOUBLECOLON . block 
+
+	VAR	shift 7
+
+	block	goto 6
+	declarationseq	goto 5
+	declaration	goto 4
+
+	.	reduce by rule 3
+
+
+state 4:
+
+	declarationseq : declaration . declarationseq 
+
+	VAR	shift 7
+
+	declarationseq	goto 8
+	declaration	goto 4
+
+	.	reduce by rule 3
+
+
+state 5:
+
+	block : declarationseq . commandseq 
+
+	LBRACE	shift 10
+
+	commandseq	goto 9
+
+	.	error
+
+
+state 6:
+
+	begin : PROGRAM IDENTIFIER DOUBLECOLON block .  (reduce by rule 0)
+
+
+
+	.	reduce by rule 0
+
+
+state 7:
+
+	declaration : VAR . varlist COLON INT SEMICOLON 
+	declaration : VAR . varlist COLON BOOL SEMICOLON 
+
+	IDENTIFIER	shift 13
+
+	varlist	goto 12
+	variable	goto 11
+
+	.	error
+
+
+state 8:
+
+	declarationseq : declaration declarationseq .  (reduce by rule 2)
+
+
+
+	.	reduce by rule 2
+
+
+state 9:
+
+	block : declarationseq commandseq .  (reduce by rule 1)
+
+
+
+	.	reduce by rule 1
+
+
+state 10:
+
+	commandseq : LBRACE . commandseqend 
+
+	READ	shift 21
+	WRITE	shift 20
+	IF	shift 19
+	WHILE	shift 18
+	IDENTIFIER	shift 13
+	RBRACE	shift 17
+
+	variable	goto 16
+	commandseqend	goto 15
+	command	goto 14
+
+	.	error
+
+
+state 11:
+
+	varlist : variable . COMMA varlist 
+	varlist : variable .  (reduce by rule 7)
+
+	COMMA	shift 22
+
+
+	.	reduce by rule 7
+
+
+state 12:
+
+	declaration : VAR varlist . COLON INT SEMICOLON 
+	declaration : VAR varlist . COLON BOOL SEMICOLON 
+
+	COLON	shift 23
+
+
+	.	error
+
+
+state 13:
+
+	variable : IDENTIFIER .  (reduce by rule 8)
+
+
+
+	.	reduce by rule 8
+
+
+state 14:
+
+	commandseqend : command . SEMICOLON commandseqend 
+
+	SEMICOLON	shift 24
+
+
+	.	error
+
+
+state 15:
+
+	commandseq : LBRACE commandseqend .  (reduce by rule 9)
+
+
+
+	.	reduce by rule 9
+
+
+state 16:
+
+	command : variable . ASSIGN expression 
+
+	ASSIGN	shift 25
+
+
+	.	error
+
+
+state 17:
+
+	commandseqend : RBRACE .  (reduce by rule 11)
+
+
+
+	.	reduce by rule 11
+
+
+state 18:
+
+	command : WHILE . expression DO commandseq ENDWH 
+
+	TT	shift 33
+	FF	shift 32
+	NOT	shift 31
+	NEGATIVE	shift 30
+	IDENTIFIER	shift 13
+	INTCONST	shift 29
+	LPAREN	shift 28
+
+	variable	goto 27
+	expression	goto 26
+
+	.	error
+
+
+state 19:
+
+	command : IF . expression THEN commandseq ELSE commandseq ENDIF 
+
+	TT	shift 33
+	FF	shift 32
+	NOT	shift 31
+	NEGATIVE	shift 30
+	IDENTIFIER	shift 13
+	INTCONST	shift 29
+	LPAREN	shift 28
+
+	variable	goto 27
+	expression	goto 34
+
+	.	error
+
+
+state 20:
+
+	command : WRITE . expression 
+
+	TT	shift 33
+	FF	shift 32
+	NOT	shift 31
+	NEGATIVE	shift 30
+	IDENTIFIER	shift 13
+	INTCONST	shift 29
+	LPAREN	shift 28
+
+	variable	goto 27
+	expression	goto 35
+
+	.	error
+
+
+state 21:
+
+	command : READ . variable 
+
+	IDENTIFIER	shift 13
+
+	variable	goto 36
+
+	.	error
+
+
+state 22:
+
+	varlist : variable COMMA . varlist 
+
+	IDENTIFIER	shift 13
+
+	varlist	goto 37
+	variable	goto 11
+
+	.	error
+
+
+state 23:
+
+	declaration : VAR varlist COLON . INT SEMICOLON 
+	declaration : VAR varlist COLON . BOOL SEMICOLON 
+
+	INT	shift 39
+	BOOL	shift 38
+
+
+	.	error
+
+
+state 24:
+
+	commandseqend : command SEMICOLON . commandseqend 
+
+	READ	shift 21
+	WRITE	shift 20
+	IF	shift 19
+	WHILE	shift 18
+	IDENTIFIER	shift 13
+	RBRACE	shift 17
+
+	variable	goto 16
+	commandseqend	goto 40
+	command	goto 14
+
+	.	error
+
+
+state 25:
+
+	command : variable ASSIGN . expression 
+
+	TT	shift 33
+	FF	shift 32
+	NOT	shift 31
+	NEGATIVE	shift 30
+	IDENTIFIER	shift 13
+	INTCONST	shift 29
+	LPAREN	shift 28
+
+	variable	goto 27
+	expression	goto 41
+
+	.	error
+
+
+state 26:
+
+	command : WHILE expression . DO commandseq ENDWH 
+	expression : expression . addop expression 
+	expression : expression . boolop expression 
+	expression : expression . mulop expression 
+	expression : expression . relop expression 
+
+	DO	shift 59
+	AND	shift 58
+	OR	shift 57
+	LT	shift 56
+	LEQ	shift 55
+	EQ	shift 54
+	NEQ	shift 53
+	GT	shift 52
+	GEQ	shift 51
+	PLUS	shift 50
+	MINUS	shift 49
+	TIMES	shift 48
+	DIV	shift 47
+	MOD	shift 46
+
+	addop	goto 45
+	mulop	goto 44
+	relop	goto 43
+	boolop	goto 42
+
+	.	error
+
+
+state 27:
+
+	expression : variable .  (reduce by rule 24)
+
+
+
+	.	reduce by rule 24
+
+
+state 28:
+
+	expression : LPAREN . expression RPAREN 
+
+	TT	shift 33
+	FF	shift 32
+	NOT	shift 31
+	NEGATIVE	shift 30
+	IDENTIFIER	shift 13
+	INTCONST	shift 29
+	LPAREN	shift 28
+
+	variable	goto 27
+	expression	goto 60
+
+	.	error
+
+
+state 29:
+
+	expression : INTCONST .  (reduce by rule 25)
+
+
+
+	.	reduce by rule 25
+
+
+state 30:
+
+	expression : NEGATIVE . expression 
+
+	TT	shift 33
+	FF	shift 32
+	NOT	shift 31
+	NEGATIVE	shift 30
+	IDENTIFIER	shift 13
+	INTCONST	shift 29
+	LPAREN	shift 28
+
+	variable	goto 27
+	expression	goto 61
+
+	.	error
+
+
+state 31:
+
+	expression : NOT . expression 
+
+	TT	shift 33
+	FF	shift 32
+	NOT	shift 31
+	NEGATIVE	shift 30
+	IDENTIFIER	shift 13
+	INTCONST	shift 29
+	LPAREN	shift 28
+
+	variable	goto 27
+	expression	goto 62
+
+	.	error
+
+
+state 32:
+
+	expression : FF .  (reduce by rule 27)
+
+
+
+	.	reduce by rule 27
+
+
+state 33:
+
+	expression : TT .  (reduce by rule 26)
+
+
+
+	.	reduce by rule 26
+
+
+state 34:
+
+	command : IF expression . THEN commandseq ELSE commandseq ENDIF 
+	expression : expression . addop expression 
+	expression : expression . boolop expression 
+	expression : expression . mulop expression 
+	expression : expression . relop expression 
+
+	THEN	shift 63
+	AND	shift 58
+	OR	shift 57
+	LT	shift 56
+	LEQ	shift 55
+	EQ	shift 54
+	NEQ	shift 53
+	GT	shift 52
+	GEQ	shift 51
+	PLUS	shift 50
+	MINUS	shift 49
+	TIMES	shift 48
+	DIV	shift 47
+	MOD	shift 46
+
+	addop	goto 45
+	mulop	goto 44
+	relop	goto 43
+	boolop	goto 42
+
+	.	error
+
+
+state 35:
+
+	command : WRITE expression .  (reduce by rule 14)
+	expression : expression . addop expression 
+	expression : expression . boolop expression 
+	expression : expression . mulop expression 
+	expression : expression . relop expression 
+
+	AND	shift 58
+	OR	shift 57
+	LT	shift 56
+	LEQ	shift 55
+	EQ	shift 54
+	NEQ	shift 53
+	GT	shift 52
+	GEQ	shift 51
+	PLUS	shift 50
+	MINUS	shift 49
+	TIMES	shift 48
+	DIV	shift 47
+	MOD	shift 46
+
+	addop	goto 45
+	mulop	goto 44
+	relop	goto 43
+	boolop	goto 42
+
+	.	reduce by rule 14
+
+
+state 36:
+
+	command : READ variable .  (reduce by rule 13)
+
+
+
+	.	reduce by rule 13
+
+
+state 37:
+
+	varlist : variable COMMA varlist .  (reduce by rule 6)
+
+
+
+	.	reduce by rule 6
+
+
+state 38:
+
+	declaration : VAR varlist COLON BOOL . SEMICOLON 
+
+	SEMICOLON	shift 64
+
+
+	.	error
+
+
+state 39:
+
+	declaration : VAR varlist COLON INT . SEMICOLON 
+
+	SEMICOLON	shift 65
+
+
+	.	error
+
+
+state 40:
+
+	commandseqend : command SEMICOLON commandseqend .  (reduce by rule 10)
+
+
+
+	.	reduce by rule 10
+
+
+state 41:
+
+	command : variable ASSIGN expression .  (reduce by rule 12)
+	expression : expression . addop expression 
+	expression : expression . boolop expression 
+	expression : expression . mulop expression 
+	expression : expression . relop expression 
+
+	AND	shift 58
+	OR	shift 57
+	LT	shift 56
+	LEQ	shift 55
+	EQ	shift 54
+	NEQ	shift 53
+	GT	shift 52
+	GEQ	shift 51
+	PLUS	shift 50
+	MINUS	shift 49
+	TIMES	shift 48
+	DIV	shift 47
+	MOD	shift 46
+
+	addop	goto 45
+	mulop	goto 44
+	relop	goto 43
+	boolop	goto 42
+
+	.	reduce by rule 12
+
+
+state 42:
+
+	expression : expression boolop . expression 
+
+	TT	shift 33
+	FF	shift 32
+	NOT	shift 31
+	NEGATIVE	shift 30
+	IDENTIFIER	shift 13
+	INTCONST	shift 29
+	LPAREN	shift 28
+
+	variable	goto 27
+	expression	goto 66
+
+	.	error
+
+
+state 43:
+
+	expression : expression relop . expression 
+
+	TT	shift 33
+	FF	shift 32
+	NOT	shift 31
+	NEGATIVE	shift 30
+	IDENTIFIER	shift 13
+	INTCONST	shift 29
+	LPAREN	shift 28
+
+	variable	goto 27
+	expression	goto 67
+
+	.	error
+
+
+state 44:
+
+	expression : expression mulop . expression 
+
+	TT	shift 33
+	FF	shift 32
+	NOT	shift 31
+	NEGATIVE	shift 30
+	IDENTIFIER	shift 13
+	INTCONST	shift 29
+	LPAREN	shift 28
+
+	variable	goto 27
+	expression	goto 68
+
+	.	error
+
+
+state 45:
+
+	expression : expression addop . expression 
+
+	TT	shift 33
+	FF	shift 32
+	NOT	shift 31
+	NEGATIVE	shift 30
+	IDENTIFIER	shift 13
+	INTCONST	shift 29
+	LPAREN	shift 28
+
+	variable	goto 27
+	expression	goto 69
+
+	.	error
+
+
+state 46:
+
+	mulop : MOD .  (reduce by rule 32)
+
+
+
+	.	reduce by rule 32
+
+
+state 47:
+
+	mulop : DIV .  (reduce by rule 31)
+
+
+
+	.	reduce by rule 31
+
+
+state 48:
+
+	mulop : TIMES .  (reduce by rule 30)
+
+
+
+	.	reduce by rule 30
+
+
+state 49:
+
+	addop : MINUS .  (reduce by rule 29)
+
+
+
+	.	reduce by rule 29
+
+
+state 50:
+
+	addop : PLUS .  (reduce by rule 28)
+
+
+
+	.	reduce by rule 28
+
+
+state 51:
+
+	relop : GEQ .  (reduce by rule 39)
+
+
+
+	.	reduce by rule 39
+
+
+state 52:
+
+	relop : GT .  (reduce by rule 38)
+
+
+
+	.	reduce by rule 38
+
+
+state 53:
+
+	relop : NEQ .  (reduce by rule 40)
+
+
+
+	.	reduce by rule 40
+
+
+state 54:
+
+	relop : EQ .  (reduce by rule 37)
+
+
+
+	.	reduce by rule 37
+
+
+state 55:
+
+	relop : LEQ .  (reduce by rule 36)
+
+
+
+	.	reduce by rule 36
+
+
+state 56:
+
+	relop : LT .  (reduce by rule 35)
+
+
+
+	.	reduce by rule 35
+
+
+state 57:
+
+	boolop : OR .  (reduce by rule 34)
+
+
+
+	.	reduce by rule 34
+
+
+state 58:
+
+	boolop : AND .  (reduce by rule 33)
+
+
+
+	.	reduce by rule 33
+
+
+state 59:
+
+	command : WHILE expression DO . commandseq ENDWH 
+
+	LBRACE	shift 10
+
+	commandseq	goto 70
+
+	.	error
+
+
+state 60:
+
+	expression : expression . addop expression 
+	expression : expression . boolop expression 
+	expression : expression . mulop expression 
+	expression : expression . relop expression 
+	expression : LPAREN expression . RPAREN 
+
+	AND	shift 58
+	OR	shift 57
+	LT	shift 56
+	LEQ	shift 55
+	EQ	shift 54
+	NEQ	shift 53
+	GT	shift 52
+	GEQ	shift 51
+	PLUS	shift 50
+	MINUS	shift 49
+	TIMES	shift 48
+	DIV	shift 47
+	MOD	shift 46
+	RPAREN	shift 71
+
+	addop	goto 45
+	mulop	goto 44
+	relop	goto 43
+	boolop	goto 42
+
+	.	error
+
+
+state 61:
+
+	expression : expression . addop expression 
+	expression : expression . boolop expression 
+	expression : expression . mulop expression 
+	expression : expression . relop expression 
+	expression : NEGATIVE expression .  (reduce by rule 21)
+
+
+	addop	goto 45
+	mulop	goto 44
+	relop	goto 43
+	boolop	goto 42
+
+	.	reduce by rule 21
+
+
+state 62:
+
+	expression : expression . addop expression 
+	expression : expression . boolop expression 
+	expression : expression . mulop expression 
+	expression : expression . relop expression 
+	expression : NOT expression .  (reduce by rule 22)
+
+
+	addop	goto 45
+	mulop	goto 44
+	relop	goto 43
+	boolop	goto 42
+
+	.	reduce by rule 22
+
+
+state 63:
+
+	command : IF expression THEN . commandseq ELSE commandseq ENDIF 
+
+	LBRACE	shift 10
+
+	commandseq	goto 72
+
+	.	error
+
+
+state 64:
+
+	declaration : VAR varlist COLON BOOL SEMICOLON .  (reduce by rule 5)
+
+
+
+	.	reduce by rule 5
+
+
+state 65:
+
+	declaration : VAR varlist COLON INT SEMICOLON .  (reduce by rule 4)
+
+
+
+	.	reduce by rule 4
+
+
+state 66:
+
+	expression : expression . addop expression 
+	expression : expression . boolop expression 
+	expression : expression boolop expression .  (reduce by rule 18)
+	expression : expression . mulop expression 
+	expression : expression . relop expression 
+
+	LT	shift 56
+	LEQ	shift 55
+	EQ	shift 54
+	NEQ	shift 53
+	GT	shift 52
+	GEQ	shift 51
+	PLUS	shift 50
+	MINUS	shift 49
+	TIMES	shift 48
+	DIV	shift 47
+	MOD	shift 46
+
+	addop	goto 45
+	mulop	goto 44
+	relop	goto 43
+	boolop	goto 42
+
+	.	reduce by rule 18
+
+
+state 67:
+
+	expression : expression . addop expression 
+	expression : expression . boolop expression 
+	expression : expression . mulop expression 
+	expression : expression . relop expression 
+	expression : expression relop expression .  (reduce by rule 20)
+
+	THEN	reduce by rule 20
+	DO	reduce by rule 20
+	AND	reduce by rule 20
+	OR	reduce by rule 20
+	PLUS	shift 50
+	MINUS	shift 49
+	TIMES	shift 48
+	DIV	shift 47
+	MOD	shift 46
+	SEMICOLON	reduce by rule 20
+	RPAREN	reduce by rule 20
+
+	addop	goto 45
+	mulop	goto 44
+	relop	goto 43
+	boolop	goto 42
+
+	.	error
+
+
+state 68:
+
+	expression : expression . addop expression 
+	expression : expression . boolop expression 
+	expression : expression . mulop expression 
+	expression : expression mulop expression .  (reduce by rule 19)
+	expression : expression . relop expression 
+
+
+	addop	goto 45
+	mulop	goto 44
+	relop	goto 43
+	boolop	goto 42
+
+	.	reduce by rule 19
+
+
+state 69:
+
+	expression : expression . addop expression 
+	expression : expression addop expression .  (reduce by rule 17)
+	expression : expression . boolop expression 
+	expression : expression . mulop expression 
+	expression : expression . relop expression 
+
+	TIMES	shift 48
+	DIV	shift 47
+	MOD	shift 46
+
+	addop	goto 45
+	mulop	goto 44
+	relop	goto 43
+	boolop	goto 42
+
+	.	reduce by rule 17
+
+
+state 70:
+
+	command : WHILE expression DO commandseq . ENDWH 
+
+	ENDWH	shift 73
+
+
+	.	error
+
+
+state 71:
+
+	expression : LPAREN expression RPAREN .  (reduce by rule 23)
+
+
+
+	.	reduce by rule 23
+
+
+state 72:
+
+	command : IF expression THEN commandseq . ELSE commandseq ENDIF 
+
+	ELSE	shift 74
+
+
+	.	error
+
+
+state 73:
+
+	command : WHILE expression DO commandseq ENDWH .  (reduce by rule 16)
+
+
+
+	.	reduce by rule 16
+
+
+state 74:
+
+	command : IF expression THEN commandseq ELSE . commandseq ENDIF 
+
+	LBRACE	shift 10
+
+	commandseq	goto 75
+
+	.	error
+
+
+state 75:
+
+	command : IF expression THEN commandseq ELSE commandseq . ENDIF 
+
+	ENDIF	shift 76
+
+
+	.	error
+
+
+state 76:
+
+	command : IF expression THEN commandseq ELSE commandseq ENDIF .  (reduce by rule 15)
+
+
+
+	.	reduce by rule 15
+
+
+state 77:
+
+
+	EOF	accept
+
+
+	.	error
+
+124 of 284 action table entries left after compaction
+87 goto table entries

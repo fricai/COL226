@@ -11,11 +11,16 @@ val lin = ref 1;
 val col = ref 0;
 val eolpos = ref 0;
 
-val badCh : string * string * int * int -> unit = fn 
-    (fileName,bad,line,col) =>
-    TextIO.output(TextIO.stdOut,fileName^"["^Int.toString line
-                 ^"."^Int.toString col^"] Invalid character \""
-                 ^bad^"\"\n");
+val badChar : string * string * int * int -> unit = fn 
+    (fileName, bad, line, col) =>
+    TextIO.output(TextIO.stdOut,fileName ^ "[" ^ Int.toString line
+                  ^ "." ^ Int.toString col ^ "] Invalid character \""
+                  ^ bad ^ "\"\n");
+val overflowError : string * string * int * int -> unit = fn 
+    (fileName, bad, line, col) =>
+    TextIO.output(TextIO.stdOut,fileName ^ "[" ^ Int.toString line
+                  ^ "." ^ Int.toString col ^ "] Integer overflows \""
+                  ^ bad ^ "\"\n");
 val eof = fn fileName => T.EOF (!lin,!col);
 
 structure KeyWord : 
@@ -24,29 +29,7 @@ sig
 end 
 =
 struct
- val TableSize =  422 (* 211 *)
- val HashFactor = 5
-
- val hash = fn 
-     s => List.foldr (fn (c,v) => (v * HashFactor + (ord c)) mod TableSize) 0 (explode s)
-
-val HashTable = Array.array(TableSize,nil) :
-       (string * (int * int -> (svalue, int) token)) list Array.array
-
- val add = fn 
-     (s,v) => let val i = hash s
-              in Array.update(HashTable, i, (s,v) 
-                 :: (Array.sub(HashTable, i)))
-              end
-
- val find = fn 
-     s => let val i = hash s
-              fun f ((key,v)::r) = if s=key then SOME v else f r
-                | f nil = NONE
-          in  f (Array.sub(HashTable, i))
-          end
-
- val _ = (List.app add [
+ val keywords = [
       ("program", T.PROGRAM),
       ("var",     T.VAR),
       ("int",     T.INT),
@@ -62,9 +45,13 @@ val HashTable = Array.array(TableSize,nil) :
       ("endwh",   T.ENDWH),
       ("tt",      T.TT),
       ("ff",      T.FF)
-     ])
-  end
-open KeyWord
+ ]
+
+ val find = fn s =>
+                 case List.find (fn (x, v) => x = s) keywords of
+		        SOME (_, v) => SOME v
+		      | NONE        => NONE
+end
 
 %%
 %header (functor WhileLexFun(structure Tokens: While_TOKENS));
@@ -80,12 +67,18 @@ eol           = ("\013\010"|"\010"|"\013");
 {eol}          => (lin := (!lin) + 1; eolpos := yypos + size yytext; continue());
 {digit}+       => (
                      col := yypos - (!eolpos);
-                     T.INTCONST(valOf(Int.fromString yytext), !lin, !col)
+                     T.INTCONST(valOf(
+		                Int.fromString yytext
+				handle Overflow => (
+					overflowError(fileName, yytext, !lin, !col);
+					raise Overflow)
+				),
+				!lin, !col)
               );
 {alpha}{alphanum}* => (
                      col := yypos - (!eolpos);
-		     case find yytext of
-		          SOME key => key(!lin, !col) (* for keywords *)
+		     case KeyWord.find yytext of
+		            SOME key => key(!lin, !col) (* for keywords *)
 			  | _      => T.IDENTIFIER(yytext, !lin, !col) (* is a variable name *)
 	      );
 ":"  => (col := yypos - (!eolpos); T.COLON(!lin, !col));
@@ -112,5 +105,5 @@ eol           = ("\013\010"|"\010"|"\013");
 "{"  => (col := yypos - (!eolpos); T.LBRACE(!lin, !col));
 "}"  => (col := yypos - (!eolpos); T.RBRACE(!lin, !col));
 ","  => (col := yypos - (!eolpos); T.COMMA(!lin, !col));
-.    => (badCh(fileName, yytext, !lin, !col); T.ILLCH(!lin, !col));
+.    => (badChar(fileName, yytext, !lin, !col); T.ILLCH(!lin, !col));
 
