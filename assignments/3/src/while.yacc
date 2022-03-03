@@ -42,7 +42,6 @@ open AST
     | INTCONST        of int
     | ADDOP
     | MULOP
-    | BOOLOP
     | RELOP
     | LPAREN
     | RPAREN
@@ -73,7 +72,8 @@ open AST
 %eop EOF
 %noshift EOF
 
-%left     BOOLOP AND OR
+%left     OR
+%left     AND
 %nonassoc RELOP LT LEQ EQ NEQ GT GEQ
 %left     ADDOP PLUS MINUS
 %left     MULOP TIMES DIV MOD
@@ -120,18 +120,18 @@ command:
 
 expression:
   expression addop expression            %prec ADDOP    (addop(expression1, expression2))
-| expression boolop expression           %prec BOOLOP   (boolop(expression1, expression2))
 | expression mulop expression            %prec MULOP    (mulop(expression1, expression2))
-| expression relop expression            %prec RELOP    (relop(expression1, expression2))
 | NEGATIVE expression                    %prec NEGATIVE (NEGATIVE(expression))
+| INTCONST                                              (INTVAL(INTCONST))
+| expression AND expression              %prec AND      (AND(expression1, expression2))
+| expression OR expression               %prec OR       (OR(expression1, expression2))
 | NOT expression                         %prec NOT      (NOT(expression))
 | LPAREN expression RPAREN                              (expression)
 | variable                                              (VAR(variable))
-| INTCONST                                              (INTVAL(INTCONST))
 | TT                                                    (BOOLVAL(true))
 | FF                                                    (BOOLVAL(false))
+| expression relop expression            %prec RELOP    (relop(expression1, expression2))
 
 addop:  PLUS (PLUS) | MINUS (MINUS)
 mulop:  TIMES (TIMES) | DIV (DIV) | MOD (MOD)
-boolop: AND (AND) | OR (OR)
 relop:  LT (LT) | LEQ (LEQ) | EQ (EQ) | GT (GT) | GEQ (GEQ) | NEQ (NEQ)

@@ -11,18 +11,18 @@ struct
              | WRITE    of Exp
              | ITE      of Exp * (Cmd list) * (Cmd list)
              | WH       of Exp * (Cmd list)
-  and Exp    = (* boolean operations *)
+  and Exp    = (* boolean operators *)
                AND      of Exp * Exp
              | OR       of Exp * Exp
              | NOT      of Exp
-             (* relational operations *)
+             (* relational operators *)
              | LT       of Exp * Exp
              | LEQ      of Exp * Exp
              | EQ       of Exp * Exp
              | GT       of Exp * Exp
              | GEQ      of Exp * Exp
              | NEQ      of Exp * Exp
-             (* integer operations *)
+             (* integer operators *)
              | PLUS     of Exp * Exp
              | MINUS    of Exp * Exp
              | TIMES    of Exp * Exp
@@ -30,7 +30,7 @@ struct
              | MOD      of Exp * Exp
              | NEGATIVE of Exp
              (* terminals *)
-             | VAR   of Var
+             | VAR      of Var
              | INTVAL   of int
              | BOOLVAL  of bool
 end;

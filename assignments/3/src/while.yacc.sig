@@ -8,7 +8,6 @@ val LBRACE:  'a * 'a -> (svalue,'a) token
 val RPAREN:  'a * 'a -> (svalue,'a) token
 val LPAREN:  'a * 'a -> (svalue,'a) token
 val RELOP:  'a * 'a -> (svalue,'a) token
-val BOOLOP:  'a * 'a -> (svalue,'a) token
 val MULOP:  'a * 'a -> (svalue,'a) token
 val ADDOP:  'a * 'a -> (svalue,'a) token
 val INTCONST: (int) *  'a * 'a -> (svalue,'a) token
