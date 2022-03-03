@@ -3,5 +3,13 @@ program lol ::
  var B:
                                                     bool;
  {
-  C := 1 < tt;
+  if (5 < 3) then {
+   A := B;
+  } else {
+   C := D;
+   while (P < Q) do {
+     X := Y;
+   } endwh;
+  };
+  A := 1 < tt;
  }

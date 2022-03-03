@@ -65,7 +65,6 @@ val HashTable = Array.array(TableSize,nil) :
      ])
   end
 open KeyWord
-(* need to handle colon and double colon separately *)
 
 %%
 %header (functor WhileLexFun(structure Tokens: While_TOKENS));
@@ -83,35 +82,35 @@ eol           = ("\013\010"|"\010"|"\013");
                      col := yypos - (!eolpos);
                      T.INTCONST(valOf(Int.fromString yytext), !lin, !col)
               );
-{alpha}{alphanum}*   => (
+{alpha}{alphanum}* => (
                      col := yypos - (!eolpos);
 		     case find yytext of
 		          SOME key => key(!lin, !col) (* for keywords *)
 			  | _      => T.IDENTIFIER(yytext, !lin, !col) (* is a variable name *)
 	      );
-":"            => (col := yypos - (!eolpos); T.COLON(!lin, !col));
-"::"           => (col := yypos - (!eolpos); T.DOUBLECOLON(!lin, !col));
-"!" => (col := yypos - (!eolpos);       T.NOT(!lin, !col));
-"&&" => (col := yypos - (!eolpos);      T.AND(!lin, !col));
-"||" => (col := yypos - (!eolpos);      T.OR(!lin, !col));
-"<" => (col := yypos - (!eolpos);       T.LT(!lin, !col));
-"<=" => (col := yypos - (!eolpos);      T.LEQ(!lin, !col));
-"=" => (col := yypos - (!eolpos);       T.EQ(!lin, !col));
-">" => (col := yypos - (!eolpos);       T.GT(!lin, !col));
-">=" => (col := yypos - (!eolpos);      T.GEQ(!lin, !col));
-"<>" => (col := yypos - (!eolpos);      T.NEQ(!lin, !col));
-"+" => (col := yypos - (!eolpos);       T.PLUS(!lin, !col));
-"-" => (col := yypos - (!eolpos);       T.MINUS(!lin, !col));
-"~" => (col := yypos - (!eolpos);       T.NEGATIVE(!lin, !col));
-"*" => (col := yypos - (!eolpos);       T.TIMES(!lin, !col));
-"/" => (col := yypos - (!eolpos);       T.DIV(!lin, !col));
-"%" => (col := yypos - (!eolpos);       T.MOD(!lin, !col));
-":=" => (col := yypos - (!eolpos);      T.ASSIGN(!lin, !col));
-";" => (col := yypos - (!eolpos);       T.SEMICOLON(!lin, !col));
-"(" => (col := yypos - (!eolpos);       T.LPAREN(!lin, !col));
-")" => (col := yypos - (!eolpos);       T.RPAREN(!lin, !col));
-"{" => (col := yypos - (!eolpos);       T.LBRACE(!lin, !col));
-"}" => (col := yypos - (!eolpos);       T.RBRACE(!lin, !col));
-"," => (col := yypos - (!eolpos);       T.COMMA(!lin, !col));
-.              => (badCh(fileName, yytext, !lin, !col); T.ILLCH(!lin, !col));
+":"  => (col := yypos - (!eolpos); T.COLON(!lin, !col));
+"::" => (col := yypos - (!eolpos); T.DOUBLECOLON(!lin, !col));
+"!"  => (col := yypos - (!eolpos); T.NOT(!lin, !col));
+"&&" => (col := yypos - (!eolpos); T.AND(!lin, !col));
+"||" => (col := yypos - (!eolpos); T.OR(!lin, !col));
+"<"  => (col := yypos - (!eolpos); T.LT(!lin, !col));
+"<=" => (col := yypos - (!eolpos); T.LEQ(!lin, !col));
+"="  => (col := yypos - (!eolpos); T.EQ(!lin, !col));
+">"  => (col := yypos - (!eolpos); T.GT(!lin, !col));
+">=" => (col := yypos - (!eolpos); T.GEQ(!lin, !col));
+"<>" => (col := yypos - (!eolpos); T.NEQ(!lin, !col));
+"+"  => (col := yypos - (!eolpos); T.PLUS(!lin, !col));
+"-"  => (col := yypos - (!eolpos); T.MINUS(!lin, !col));
+"~"  => (col := yypos - (!eolpos); T.NEGATIVE(!lin, !col));
+"*"  => (col := yypos - (!eolpos); T.TIMES(!lin, !col));
+"/"  => (col := yypos - (!eolpos); T.DIV(!lin, !col));
+"%"  => (col := yypos - (!eolpos); T.MOD(!lin, !col));
+":=" => (col := yypos - (!eolpos); T.ASSIGN(!lin, !col));
+";"  => (col := yypos - (!eolpos); T.SEMICOLON(!lin, !col));
+"("  => (col := yypos - (!eolpos); T.LPAREN(!lin, !col));
+")"  => (col := yypos - (!eolpos); T.RPAREN(!lin, !col));
+"{"  => (col := yypos - (!eolpos); T.LBRACE(!lin, !col));
+"}"  => (col := yypos - (!eolpos); T.RBRACE(!lin, !col));
+","  => (col := yypos - (!eolpos); T.COMMA(!lin, !col));
+.    => (badCh(fileName, yytext, !lin, !col); T.ILLCH(!lin, !col));
 
