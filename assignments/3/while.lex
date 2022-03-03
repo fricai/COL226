@@ -4,6 +4,7 @@ type pos = int
 type svalue = T.svalue
 type ('a, 'b) token = ('a, 'b) T.token
 type lexresult = (svalue, pos) token
+type lexarg = string
 type arg = lexarg
 
 val lin = ref 1;
@@ -60,33 +61,11 @@ val HashTable = Array.array(TableSize,nil) :
       ("do",      T.DO),
       ("endwh",   T.ENDWH),
       ("tt",      T.TT),
-      ("ff",      T.FF),
-      ("!",       T.NOT),
-      ("&&",      T.AND),
-      ("||",      T.OR),
-      ("<",       T.LT),
-      ("<=",      T.LEQ),
-      ("=",       T.EQ),
-      (">",       T.GT),
-      (">=",      T.GEQ),
-      ("<>",      T.NEQ),
-      ("+",       T.PLUS),
-      ("-",       T.MINUS),
-      ("~",       T.NEGATIVE),
-      ("*",       T.TIMES),
-      ("/",       T.DIV),
-      ("%",       T.MOD),
-      (":=",      T.ASSIGN)
-      (";",       T.SEMICOLON),
-      ("::",      T.DOUBLECOLON),
-      (":",       T.COLON),
-      ("(",       T.LPAREN),
-      (")",       T.RPAREN),
-      ("{",       T.LBRACE),
-      ("}",       T.RBRACE)
+      ("ff",      T.FF)
      ])
   end
 open KeyWord
+(* need to handle colon and double colon separately *)
 
 %%
 %header (functor WhileLexFun(structure Tokens: While_TOKENS));
@@ -98,9 +77,9 @@ ws            = [\ \t];
 eol           = ("\013\010"|"\010"|"\013");
 
 %%
-{ws}*      => (continue());
-{eol}      => (lin := (!lin) + 1; eolpos := yypos + size yytext; continue());
-{digit}+ => (
+{ws}*          => (continue());
+{eol}          => (lin := (!lin) + 1; eolpos := yypos + size yytext; continue());
+{digit}+       => (
                      col := yypos - (!eolpos);
                      T.INTCONST(valOf(Int.fromString yytext), !lin, !col)
               );
@@ -110,9 +89,29 @@ eol           = ("\013\010"|"\010"|"\013");
 		          SOME key => key(!lin, !col) (* for keywords *)
 			  | _      => T.IDENTIFIER(yytext, !lin, !col) (* is a variable name *)
 	      );
-.           => (
-		col := yypos - (!eolpos);
-		case find yytext of
-		     SOME op => op(!lin, !col)      (* for operators *)
-		     | _      => (badCh(fileName, yytex, !lin, !col); T.ILLCH(!lin, !col))
-              );
+":"            => (col := yypos - (!eolpos); T.COLON(!lin, !col));
+"::"           => (col := yypos - (!eolpos); T.DOUBLECOLON(!lin, !col));
+"!" => (col := yypos - (!eolpos);       T.NOT(!lin, !col));
+"&&" => (col := yypos - (!eolpos);      T.AND(!lin, !col));
+"||" => (col := yypos - (!eolpos);      T.OR(!lin, !col));
+"<" => (col := yypos - (!eolpos);       T.LT(!lin, !col));
+"<=" => (col := yypos - (!eolpos);      T.LEQ(!lin, !col));
+"=" => (col := yypos - (!eolpos);       T.EQ(!lin, !col));
+">" => (col := yypos - (!eolpos);       T.GT(!lin, !col));
+">=" => (col := yypos - (!eolpos);      T.GEQ(!lin, !col));
+"<>" => (col := yypos - (!eolpos);      T.NEQ(!lin, !col));
+"+" => (col := yypos - (!eolpos);       T.PLUS(!lin, !col));
+"-" => (col := yypos - (!eolpos);       T.MINUS(!lin, !col));
+"~" => (col := yypos - (!eolpos);       T.NEGATIVE(!lin, !col));
+"*" => (col := yypos - (!eolpos);       T.TIMES(!lin, !col));
+"/" => (col := yypos - (!eolpos);       T.DIV(!lin, !col));
+"%" => (col := yypos - (!eolpos);       T.MOD(!lin, !col));
+":=" => (col := yypos - (!eolpos);      T.ASSIGN(!lin, !col));
+";" => (col := yypos - (!eolpos);       T.SEMICOLON(!lin, !col));
+"(" => (col := yypos - (!eolpos);       T.LPAREN(!lin, !col));
+")" => (col := yypos - (!eolpos);       T.RPAREN(!lin, !col));
+"{" => (col := yypos - (!eolpos);       T.LBRACE(!lin, !col));
+"}" => (col := yypos - (!eolpos);       T.RBRACE(!lin, !col));
+"," => (col := yypos - (!eolpos);       T.COMMA(!lin, !col));
+.              => (badCh(fileName, yytext, !lin, !col); T.ILLCH(!lin, !col));
+

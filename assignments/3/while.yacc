@@ -88,16 +88,16 @@ block:
 declarationseq commandseq               (BLK(declarationseq, commandseq))
 
 declarationseq:
-  declaration declarationseq            (declaration @ declaration)
-| declaration                           (declaration)
+  declaration declarationseq            (declaration @ declarationseq)
+|                                       ([]) 
 
 declaration:
-  VAR varlist COLON INT                 (map INT  varlist)
-| VAR varlist COLON BOOL                (map BOOL varlist)
+  VAR varlist COLON INT SEMICOLON       (map INT  varlist)
+| VAR varlist COLON BOOL SEMICOLON      (map BOOL varlist)
 
 varlist:
-  variable COMMA varlist                (variable::varlist)
-| variable                              ([variable])
+  variable COMMA varlist                 (variable::varlist)
+| variable                               ([variable])
 
 variable: IDENTIFIER                    (IDENTIFIER)
 
@@ -117,14 +117,7 @@ command:
 | WHILE expression DO commandseq ENDWH  (WH(expression, commandseq))
 
 expression:
-  expression addop expression            %prec ADDOP    (addop(expression1, expression2))
-| expression boolop expression           %prec BOOLOP   (boolop(expression1, expression2))
-| expression mulop expression            %prec MULOP    (mulop(expression1, expression2))
-| expression relop expression            %prec RELOP    (relop(expression1, expression2))
-| NEGATIVE expression                    %prec NEGATIVE (NEGATIVE(expression))
-| NOT expression                         %prec NOT      (NOT(expression))
-| LPAREN expression RPAREN                              (expression)
-| variable                                              (VAR(variable))
+  variable                                              (VAR(variable))
 | INTCONST                                              (INTVAL(INTCONST))
 | TT                                                    (BOOLVAL(true))
 | FF                                                    (BOOLVAL(false))
