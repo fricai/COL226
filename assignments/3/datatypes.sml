@@ -2,8 +2,8 @@ structure AST =
 struct
   type Var = string
   datatype
-      Prog   = PROG of string * Blk
-  and Blk    = BLK of (Dec list) * (Cmd list)
+      Prog   = PROG    of string * Blk
+  and Blk    = BLK     of (Dec list) * (Cmd list)
   and Dec    = INT     of Var
              | BOOL    of Var
   and Cmd    = SET     of Var * Exp
@@ -29,8 +29,8 @@ struct
              | DIV     of Exp * Exp
              | MOD     of Exp * Exp
              (* terminals *)
-             | INTVAR  of string
-             | INTVAL  of Var
-             | BOOLVAR of string
-             | BOOLVAL of Var
+             | INTVAR  of Var
+             | INTVAL  of int
+             | BOOLVAR of Var
+             | BOOLVAL of bool
 end;
