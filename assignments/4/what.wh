@@ -1,0 +1,11 @@
+program what ::
+    var a, b: int;
+{
+    a := 0;
+    b := 0;
+    if ff then {
+        a := 5;
+    } else {
+        b := 5;
+    }
+}
