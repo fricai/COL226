@@ -65,7 +65,7 @@ eol           = ("\013\010"|"\010"|"\013");
 %%
 {ws}*          => (continue());
 {eol}          => (lin := (!lin) + 1; eolpos := yypos + size yytext; continue());
-{digit}+       => (
+~?{digit}+       => (
                      col := yypos - (!eolpos);
                      T.INTCONST(valOf(
 		                Int.fromString yytext

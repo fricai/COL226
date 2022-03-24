@@ -40,13 +40,14 @@ Attached below is the structure of the directory.
 │   ├── while.yacc.desc
 │   ├── while.yacc.sig
 │   └── while.yacc.sml
-├── test
+├── tests
 │   ├── bad1.wh
 │   ├── bad2.wh
 │   ├── empty.wh
 │   ├── good1.wh
 │   ├── good2.wh
-│   └── good3.wh
+│   ├── good3.wh
+│   └── good4.wh
 └── while_ast.sml
 ```
 
