@@ -1,6 +1,6 @@
 program good1 ::
  var A : int;
- var unkownmothergoose:
+ var unknownmothergoose:
                                                     bool;
  {
   if (5 < 3) then {

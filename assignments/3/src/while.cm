@@ -12,3 +12,4 @@ is
 
    $smlnj/compiler/compiler.cm    (* Structure Compiler, needed
                                      for printDepth, autoloaded. *)
+   $/smlnj-lib.cm

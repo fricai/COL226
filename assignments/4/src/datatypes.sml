@@ -1,6 +1,6 @@
 structure DATATYPES =
 struct
-  datatype MemoryStackType  = INT of int | BOOL of bool
+  type MemoryStackType  = int
   datatype ControlStackType = VAR of string
                             | BOOL of bool
                             | INT of int

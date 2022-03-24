@@ -13,8 +13,8 @@ fun compile (fileName) =
 
         val printError : string * int * int -> unit = fn 
             (msg,line,col) =>
-             print (fileName^"["^Int.toString line^":"
-                                ^Int.toString col^"] "^msg^"\n");
+             print (fileName ^ "[" ^ Int.toString line ^ ":"
+                                 ^ Int.toString col ^ "] " ^ msg ^ "\n");
 
         val _ = Compiler.Control.Print.printDepth := 1024;
         val (tree,rem) = WhileParser.parse 

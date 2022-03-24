@@ -1,0 +1,6 @@
+program bad4 ::
+ var A, B, C, D: int;
+ var E, F, G, H: bool;
+ {
+    while A do { C := D; } endwh;
+ }
