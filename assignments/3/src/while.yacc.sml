@@ -61,6 +61,15 @@ struct
     val inDomain  = HashTable.inDomain ht
 end
 
+val dupCheck : string * Var * int * int -> unit =
+    fn (fileName, x, lin, col) =>
+        if (VarTable.inDomain x)
+        then (
+            printError (fileName, "Variable " ^ x ^ " already exists", lin, col);
+            raise InvalidVariable
+        ) else ()
+
+
 val isBool : Exp -> bool =
     fn x => case x of
           AND _     => true
@@ -473,20 +482,24 @@ end
  in ( LrTable.NT 2, ( result, defaultPos, defaultPos), rest671)
 end
 |  ( 4, ( ( _, ( _, _, SEMICOLON1right)) :: _ :: _ :: ( _, ( 
-MlyValue.declvarlist declvarlist1, _, _)) :: ( _, ( _, VAR1left, _))
- :: rest671)) => let val  result = MlyValue.declaration (fn _ => let
- val  (declvarlist as declvarlist1) = declvarlist1 ()
- in (map (fn x => (VarTable.insert (x, false); INT x)) declvarlist)
-
+MlyValue.declvarlist declvarlist1, _, _)) :: ( _, ( _, (VARleft as 
+VAR1left), VARright)) :: rest671)) => let val  result = 
+MlyValue.declaration (fn _ => let val  (declvarlist as declvarlist1) =
+ declvarlist1 ()
+ in (
+map (fn x => (dupCheck (fileName, x, VARleft, VARright); VarTable.insert (x, false); INT x)) declvarlist
+)
 end)
  in ( LrTable.NT 3, ( result, VAR1left, SEMICOLON1right), rest671)
 end
 |  ( 5, ( ( _, ( _, _, SEMICOLON1right)) :: _ :: _ :: ( _, ( 
-MlyValue.declvarlist declvarlist1, _, _)) :: ( _, ( _, VAR1left, _))
- :: rest671)) => let val  result = MlyValue.declaration (fn _ => let
- val  (declvarlist as declvarlist1) = declvarlist1 ()
- in (map (fn x => (VarTable.insert (x, true); BOOL x)) declvarlist)
-
+MlyValue.declvarlist declvarlist1, _, _)) :: ( _, ( _, (VARleft as 
+VAR1left), VARright)) :: rest671)) => let val  result = 
+MlyValue.declaration (fn _ => let val  (declvarlist as declvarlist1) =
+ declvarlist1 ()
+ in (
+map (fn x => (dupCheck (fileName, x, VARleft, VARright); VarTable.insert (x, true); BOOL x)) declvarlist
+)
 end)
  in ( LrTable.NT 3, ( result, VAR1left, SEMICOLON1right), rest671)
 end

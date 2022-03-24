@@ -1,0 +1,6 @@
+program bad4 ::
+ var A, B, A: int;
+ var A: bool;
+ {
+    A := 5;
+ }

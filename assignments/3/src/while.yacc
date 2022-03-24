@@ -51,6 +51,15 @@ struct
     val inDomain  = HashTable.inDomain ht
 end
 
+val dupCheck : string * Var * int * int -> unit =
+    fn (fileName, x, lin, col) =>
+        if (VarTable.inDomain x)
+        then (
+            printError (fileName, "Variable " ^ x ^ " already exists", lin, col);
+            raise InvalidVariable
+        ) else ()
+
+
 val isBool : Exp -> bool =
     fn x => case x of
           AND _     => true
@@ -167,8 +176,8 @@ declarationseq:
 |                                       ([]) 
 
 declaration:
-  VAR declvarlist COLON INT SEMICOLON       (map (fn x => (VarTable.insert (x, false); INT x)) declvarlist)
-| VAR declvarlist COLON BOOL SEMICOLON      (map (fn x => (VarTable.insert (x, true); BOOL x)) declvarlist)
+  VAR declvarlist COLON INT SEMICOLON       (map (fn x => (dupCheck (fileName, x, VARleft, VARright); VarTable.insert (x, false); INT x)) declvarlist)
+| VAR declvarlist COLON BOOL SEMICOLON      (map (fn x => (dupCheck (fileName, x, VARleft, VARright); VarTable.insert (x, true); BOOL x)) declvarlist)
 
 declvarlist:
   declvar COMMA declvarlist             (declvar::declvarlist)
