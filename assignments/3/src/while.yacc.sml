@@ -50,15 +50,17 @@ sig
     val find : Var -> bool option
     val insert : Var * bool -> unit
     val inDomain : Var -> bool
+    val clear : unit -> unit
 end 
 =
 struct
     val TableSize = 422 (* 211 *)
     val ht : (string, bool) HashTable.hash_table =
         HashTable.mkTable (HashString.hashString, op=) (TableSize, Fail "Variable not found")
-    val insert    = HashTable.insert ht
-    val find      = HashTable.find ht
+    val insert    = HashTable.insert   ht
+    val find      = HashTable.find     ht
     val inDomain  = HashTable.inDomain ht
+    val clear     = fn () => HashTable.clear ht
 end
 
 val dupCheck : string * Var * int * int -> unit =
@@ -451,7 +453,7 @@ of  ( 0, ( ( _, ( MlyValue.block block1, _, block1right)) :: _ :: ( _,
  _)) :: rest671)) => let val  result = MlyValue.begin (fn _ => let
  val  (IDENTIFIER as IDENTIFIER1) = IDENTIFIER1 ()
  val  (block as block1) = block1 ()
- in (PROG(IDENTIFIER, block))
+ in ((VarTable.clear(); PROG(IDENTIFIER, block)))
 end)
  in ( LrTable.NT 0, ( result, PROGRAM1left, block1right), rest671)
 end

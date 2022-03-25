@@ -40,15 +40,17 @@ sig
     val find : Var -> bool option
     val insert : Var * bool -> unit
     val inDomain : Var -> bool
+    val clear : unit -> unit
 end 
 =
 struct
     val TableSize = 422 (* 211 *)
     val ht : (string, bool) HashTable.hash_table =
         HashTable.mkTable (HashString.hashString, op=) (TableSize, Fail "Variable not found")
-    val insert    = HashTable.insert ht
-    val find      = HashTable.find ht
+    val insert    = HashTable.insert   ht
+    val find      = HashTable.find     ht
     val inDomain  = HashTable.inDomain ht
+    val clear     = fn () => HashTable.clear ht
 end
 
 val dupCheck : string * Var * int * int -> unit =
@@ -166,7 +168,7 @@ val bothEq   : Exp * Exp -> bool = fn (x, y) => (isBool x) = (isBool y)
 
 %%
 begin:
-PROGRAM IDENTIFIER DOUBLECOLON block    (PROG(IDENTIFIER, block))
+PROGRAM IDENTIFIER DOUBLECOLON block    ((VarTable.clear(); PROG(IDENTIFIER, block)))
 
 block:
 declarationseq commandseq               (BLK(declarationseq, commandseq))
