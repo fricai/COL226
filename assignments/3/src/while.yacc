@@ -143,6 +143,7 @@ val bothEq   : Exp * Exp -> bool = fn (x, y) => (isBool x) = (isBool y)
        | commandseqend  of Cmd list
        | command        of Cmd
        | expression     of Exp
+       | num            of int
        | addop          of binOpPayload
        | mulop          of binOpPayload
        | relop          of binOpPayload
@@ -208,7 +209,11 @@ command:
                                             raise TypeMismatch                           
                                          ))
 | READ variable                         (READ(variable))
-| WRITE expression                      (WRITE(expression))
+| WRITE expression                      (if (isInt expression) then ()
+                                         else (
+                                            printError(fileName, "Integer expression expected", WRITEleft, WRITEright);
+                                            raise TypeMismatch
+                                         ); WRITE(expression))
 | IF expression THEN commandseq ELSE commandseq ENDIF
                                         (if isBool(expression)
                                          then ITE(expression, commandseq1, commandseq2)
@@ -227,7 +232,7 @@ expression:
   expression addop expression            %prec ADDOP    (binOpParse(fileName, addop, bothInt, expression1, expression2))
 | expression mulop expression            %prec MULOP    (binOpParse(fileName, mulop, bothInt, expression1, expression2))
 | NEGATIVE expression                    %prec NEGATIVE (unaryOpParse(fileName, (NEGATIVE, NEGATIVEleft, NEGATIVEright), isInt, expression))
-| INTCONST                                              (INTVAL(INTCONST))
+| num                                                   (INTVAL(num))
 | expression AND expression              %prec AND      (binOpParse(fileName, (AND, ANDleft, ANDright), bothBool, expression1, expression2))
 | expression OR expression               %prec OR       (binOpParse(fileName, (OR,  ORleft,  ORright ), bothBool, expression1, expression2))
 | NOT expression                         %prec NOT      (unaryOpParse(fileName, (NOT, NOTleft, NOTright), isBool, expression))
@@ -236,6 +241,10 @@ expression:
 | TT                                                    (BOOLVAL(true))
 | FF                                                    (BOOLVAL(false))
 | expression relop expression            %prec RELOP    (binOpParse(fileName, relop, bothEq, expression1, expression2))
+
+num:
+  PLUS INTCONST (INTCONST)
+| INTCONST      (INTCONST)
 
 addop:
   PLUS  ((PLUS , PLUSleft , PLUSright))

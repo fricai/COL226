@@ -1,4 +1,4 @@
-program bad4 ::
+program bad5::
  var A, B, A: int;
  var A: bool;
  {

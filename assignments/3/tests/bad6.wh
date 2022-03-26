@@ -1,7 +1,5 @@
 program good3 ::
     var A, B, C, D : int;
 {
-    A := C + +5;
-    B := ~5;
-    C := A + B;
+    A := C + + +5;
 }

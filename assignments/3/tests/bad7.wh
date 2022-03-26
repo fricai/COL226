@@ -1,0 +1,5 @@
+program bad7 ::
+    var A, B, C, D : int;
+{
+    A := C + +(D);
+}

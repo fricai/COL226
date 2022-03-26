@@ -43,11 +43,15 @@ Attached below is the structure of the directory.
 ├── tests
 │   ├── bad1.wh
 │   ├── bad2.wh
+│   ├── bad3.wh
+│   ├── bad4.wh
+│   ├── bad5.wh
+│   ├── bad6.wh
+│   ├── bad7.wh
 │   ├── empty.wh
 │   ├── good1.wh
 │   ├── good2.wh
-│   ├── good3.wh
-│   └── good4.wh
+│   └── good3.wh
 └── while_ast.sml
 ```
 
@@ -152,36 +156,36 @@ variable       = identifier                      => identifier
 commandseq     = "{" {command ";"} "}"           => list of commands
 command        = variable ":=" expression        => AST.SET(variable, expression)
                | "read" variable                 => AST.READ(variable)
-	       | "write" expression              => AST.WRITE(expression)
-	       | "if" expression "then" commandseq1
-		 "else" commandseq2 "endif"      => AST.ITE(expression, commandseq1, commandseq2)
-	       | "while" expression "do" commandseq
-	         "endwh"                         => AST.WH(expression, commandseq)
+               | "write" expression              => AST.WRITE(expression)
+               | "if" expression "then" commandseq1
+                 "else" commandseq2 "endif"      => AST.ITE(expression, commandseq1, commandseq2)
+               | "while" expression "do" commandseq
+                 "endwh"                         => AST.WH(expression, commandseq)
 expression     = expression1 addop expression2   => addop(expression1, expression2)
                | expression1 boolop expression2  => boolop(expression1, expression2)
-	       | expression1 mulop expression2   => mulop(expression1, expression2)
-	       | expression1 relop expression2   => relop(expression1, expression2)
-	       | "(" expression ")"              => expression
-	       | unaryop expression              => unaryop(expression)
-	       | variable                        => AST.VAR(variable)
+               | expression1 mulop expression2   => mulop(expression1, expression2)
+               | expression1 relop expression2   => relop(expression1, expression2)
+               | "(" expression ")"              => expression
+               | unaryop expression              => unaryop(expression)
+               | variable                        => AST.VAR(variable)
                | integer                         => AST.INTVAL integer
-	       | "tt"                            => AST.BOOLVAL true
-	       | "ff"                            => AST.BOOLVAL false
-integer        = digit{digit}                    => int representing the value
+               | "tt"                            => AST.BOOLVAL true
+               | "ff"                            => AST.BOOLVAL false
+integer        = [+|~]digit{digit}               => int representing the value
 identifier     = letter{letter | digit}          => string of letters and digits
 unaryop        = "~"                             => AST.NEGATIVE
                | "!"                             => AST.NOT
 mulop          = "*"                             => AST.TIMES
                | "/"                             => AST.DIV
-	       | "%"                             => AST.MOD
+               | "%"                             => AST.MOD
 addop          = "+"                             => AST.PLUS
                | "-"                             => AST.MINUS
 relop          = "<"                             => AST.LT
                | "<="                            => AST.LEQ
-	       | "="                             => AST.EQ
-	       | "<>"                            => AST.NEQ
-	       | ">="                            => AST.GEQ
-	       | ">"                             => AST.GT
+               | "="                             => AST.EQ
+               | "<>"                            => AST.NEQ
+               | ">="                            => AST.GEQ
+               | ">"                             => AST.GT
 boolop         = "&&"                            => AST.AND
                | "||"                            => AST.OR
 ```
@@ -207,12 +211,7 @@ My design majorly differs from the syntax as specified by the EBNF in the follow
 1. Relational operators make sense for boolean expressions too, as specified in the problem statement.
 2. Boolean and integer expressions are no longer separate terminals.
 3. Unary plus is not supported, due to ambiguities in the grammar and no reasonable way to resolve this in ML-Yacc.
-4. Unary minus, `~`, is always applied to an expression rather than integer constant due to the same reasons as above.
-That is, `~12` as part of an expression is parsed as `AST.NEGATIVE(AST.INTVAL 12)` rather than `AST.INTVAL ~12`.
-
-Along with this, relational operators are _not_ associative so `A < B < C` when `A`, `B` are `int` and `C` is `bool` is _not_ evaluated as `(A < B) < C`, rather an error is thrown.
-
-Note that I decided not to implement checks for types, and declaration of variable before use at this stage. There's no convenient way to do this in a single pass using the features ML-Yacc offers. It would be better to do this after the parse tree has been generated.
+4. Relational operators are _not_ associative so `A < B < C` when `A`, `B` are `int` and `C` is `bool` is _not_ evaluated as `(A < B) < C`, rather, an error is thrown.
 
 ## Other Implementation Decisions
 
