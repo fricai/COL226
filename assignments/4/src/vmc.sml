@@ -1,4 +1,3 @@
-(*
 signature VMC =
 sig
   type states
@@ -6,9 +5,8 @@ sig
   val toString : states -> (string list) * (string list) * (string list)
   val rules : states -> states
 end
- *)
 
-structure Vmc =
+structure Vmc:> VMC =
 struct
   open StackElement
   val err = FunStack.Error
