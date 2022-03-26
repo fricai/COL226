@@ -1,0 +1,16 @@
+program setting ::
+    var a, b: int;
+{
+    a := 1;
+    b := 6;
+    if (a > b) then {
+        write 1;
+        write a;
+    } else {
+        if (a * a > b) then {
+            write 2;
+        } else {
+            write 3;
+        } endif;
+    } endif;
+}

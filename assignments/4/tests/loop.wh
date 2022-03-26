@@ -1,0 +1,9 @@
+program loop ::
+    var a, b: int;
+    {
+        a := 2;
+        while (a > 0) do {
+            write a;
+            a := a - 1;
+        } endwh;
+    }

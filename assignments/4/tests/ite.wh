@@ -1,0 +1,15 @@
+program ite ::
+    var a, b: int;
+{
+    read a;
+    read b;
+    if (a > b) then {
+        write 1;
+        write a;
+    } else {
+        if (a * a > b) then {
+            write 2;
+        } else {
+        } endif;
+    } endif;
+}

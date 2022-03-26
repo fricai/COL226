@@ -1,0 +1,7 @@
+program expr ::
+    var a, b: int;
+{
+    read a;
+    read b;
+    write (a - b * 5);
+}

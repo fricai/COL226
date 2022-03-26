@@ -57,7 +57,9 @@ fun postfixCmd cmd =
      | AST.WH (exp, cmd)         => (postfixExp exp) @ (postfixCmdList cmd)  @ [StackElement.WH]
   and postfixCmdList cmdlist =
     if null cmdlist then [StackElement.EMPTY]
-    else List.concat (map postfixCmd cmdlist)
+    else (List.concat (map postfixCmd cmdlist)) @ (
+            List.tabulate ((length cmdlist) - 1, (fn _ => StackElement.SEQ))
+          )
 
 fun postfix ast =
   let
@@ -66,9 +68,7 @@ fun postfix ast =
       SymbolTable.add decllist;
       FunStack.list2stack (
         if null cmdlist then [StackElement.EMPTY]
-        else (postfixCmdList cmdlist) @ (
-          List.tabulate ((length cmdlist) - 1, (fn _ => StackElement.SEQ))
-        )
+        else postfixCmdList cmdlist
       )
     )
   end

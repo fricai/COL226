@@ -1,5 +1,0 @@
-program good3 ::
-    var A, B, C, D : bool;
-{
-    A := B || C && D || A;
-}
