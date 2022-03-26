@@ -1,6 +1,7 @@
 signature POSTFIX =
 sig
   val postfix : AST.Prog -> StackElement.StackElement FunStack.Stack
+  val ast2vmc : AST.Prog -> Vmc.states
 end
 
 structure PostFix :> POSTFIX =
@@ -66,10 +67,15 @@ fun postfix ast =
     val AST.PROG (_, AST.BLK (decllist, cmdlist)) = ast
   in (
       SymbolTable.add decllist;
-      FunStack.list2stack (
-        if null cmdlist then [StackElement.EMPTY]
-        else postfixCmdList cmdlist
-      )
+      (FunStack.list2stack o postfixCmdList) cmdlist
     )
   end
+
+fun ast2vmc ast =
+  let
+    val AST.PROG (_, AST.BLK(decl, _)) = ast
+  in
+    (FunStack.create(), Array.array(length decl, 0), postfix ast)
+  end
+
 end

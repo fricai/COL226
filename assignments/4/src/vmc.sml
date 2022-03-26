@@ -2,9 +2,9 @@ signature VMC =
 sig
   type states = (StackElement.StackElement FunStack.Stack) * (int Array.array)
               * (StackElement.StackElement FunStack.Stack)
-  val init : AST.Prog -> states
   val toString : states -> (string list) * (string list) * (string list)
   val rules : states -> states
+  val execute : states -> states
 end
 
 structure Vmc:> VMC =
@@ -17,12 +17,6 @@ struct
 
   type states = (StackElement FunStack.Stack) * (int Array.array)
               * (StackElement FunStack.Stack)
-
-  fun init ast =
-    let val AST.PROG (_, AST.BLK(decl, _)) = ast
-    in
-      (FunStack.create(), Array.array(length decl, 0), PostFix.postfix ast)
-    end
 
   fun toString (V, M, C) = (
       FunStack.stack2list (FunStack.map StackElement.toString V),
@@ -308,4 +302,8 @@ struct
               end
          | _ => raise err "I wasn't programmed for this, welp"
     end
+
+  fun execute (V, M, C) =
+    if FunStack.empty C then (V, M, C)
+    else (execute o rules) (V, M, C)
 end
