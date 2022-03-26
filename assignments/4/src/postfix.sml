@@ -77,5 +77,4 @@ fun ast2vmc ast =
   in
     (FunStack.create(), Array.array(length decl, 0), postfix ast)
   end
-
 end

@@ -61,6 +61,10 @@ struct
     end
 
   fun moveTreeV2C (V, C) = 
+    (* 
+     * moves a single complete command/expression from top of V
+     * to top of C
+     *)
     let
       val (top, rest) = valOf (poptop V)
     in
@@ -132,6 +136,9 @@ struct
            | NOTEXP => raise err "Invalid expression"
            )
     end
+    handle Overflow => raise err "Overflow error"
+      | Div         => raise err "Division by zero error"
+      | Fail str    => raise err str
 
   fun emptyStack st = (* empty stack until (and including) EOS *)
     let
@@ -157,7 +164,7 @@ struct
 
 
   fun rules (V, M, C) =
-    if (FunStack.empty) C then (V, M, C)
+    if FunStack.empty C then (V, M, C)
     else if ((FunStack.top C) = EOS) then (V, M, FunStack.pop C)
     (* EOS.C -> C *)
     else let
@@ -300,7 +307,7 @@ struct
                     (V9, M, C8)
                   end
               end
-         | _ => raise err "I wasn't programmed for this, welp"
+         | _ => evalExpr (V, M, C)
     end
 
   fun execute (V, M, C) =

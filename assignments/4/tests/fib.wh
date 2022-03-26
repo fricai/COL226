@@ -1,0 +1,22 @@
+program fib ::
+    var a, b, n, i: int;
+{
+    read n;
+    a := 0;
+    b := 1;
+    i := 0;
+    while (i < n) do {
+        if (i % 2 = 0) then {
+            a := a + b;
+        } else {
+            b := a + b;
+        } endif;
+        i := i + 1;
+    } endwh;
+
+    if (n % 2 = 0) then {
+        write a;
+    } else {
+        write b;
+    } endif;
+}

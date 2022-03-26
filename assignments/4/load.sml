@@ -1,23 +1,21 @@
 CM.make "src/while.cm";
 
-val run = Vmc.execute o PostFix.ast2vmc o While.compile
+fun run x = (Vmc.execute o PostFix.ast2vmc o While.compile) x
+  handle FunStack.Error str => (print str; raise FunStack.Error str)
 
-(*
-val printList = app (fn x => print (x ^ "."))
+val printStack = app (fn x => print (x ^ "."))
 fun debugExecute (V, M, C) =
   let
     val (sV, sM, sC) = Vmc.toString (V, M, C)
   in
   (
-    print "V: "; printList sV; print "\n";
-    print "M: "; printList sM; print "\n";
-    print "C: "; printList sC; print "\n";
+    print "V: "; printStack sV; print "\n";
+    print "M: "; printStack sM; print "\n";
+    print "C: "; printStack sC; print "\n";
     print "\n";
      if FunStack.empty C then (V, M, C)
-     else debugExecute (Vmc.rules (V, M, C))
+     else (debugExecute o Vmc.rules) (V, M, C)
   )
   end
-
-val ast = While.compile "tests/loop.wh"
-val _ = (debugExecute o Vmc.init) ast
- *)
+fun debugRun x = (debugExecute o PostFix.ast2vmc o While.compile) x
+  handle FunStack.Error str => (print str; raise FunStack.Error str)
