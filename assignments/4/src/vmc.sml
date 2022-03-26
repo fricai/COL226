@@ -1,6 +1,7 @@
 signature VMC =
 sig
-  type states
+  type states = (StackElement.StackElement FunStack.Stack) * (int Array.array)
+              * (StackElement.StackElement FunStack.Stack)
   val init : AST.Prog -> states
   val toString : states -> (string list) * (string list) * (string list)
   val rules : states -> states
@@ -184,9 +185,11 @@ struct
                val (VAR idx, V2) = (valOf o poptop) V1
              in
                (
-               Array.update(M, idx,
-               valOf (Int.fromString (valOf (TextIO.inputLine TextIO.stdIn))));
-               (V2, M, C0)
+                 Array.update(M, idx,
+                   (print "Input: ";
+                   (valOf o Int.fromString o valOf o TextIO.inputLine) TextIO.stdIn)
+                 );
+                 (V2, M, C0)
                )
              end
          | WRITE =>
@@ -206,7 +209,7 @@ struct
                 val VAL e0 = FunStack.top V3
               in
                 (
-                  print ("Output " ^ (Int.toString e0) ^ "\n");
+                  print ("Output: " ^ (Int.toString e0) ^ "\n");
                   (V, M, C3)
                 )
               end

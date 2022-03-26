@@ -1,2 +1,3 @@
 Skeleton 5
-ad"Vmc"h2egp1ä¢StackElement"f7d"AST"d"Int"Cd"FunStack"d"TextIO"d"Array"ÿd"PostFix"N
+d3f4ä¢AST"ä¢FunStack"ä¢Array"ä¢StackElement"aã¢VMC"h0ad"Vmc"jh2egp1ÿf7ÿd"Int"Cÿ
+d"TextIO"ÿÿd"PostFix"Ngp1ÿ-
