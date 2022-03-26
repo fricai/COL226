@@ -1,0 +1,2 @@
+Skeleton 5
+d3aä¢WhileLrVals"jh1aä¢Token"gp2ä¢LrParser"ÿgp1e"WhileLrValsFun"aä¢WhileLex"jh1aä¢Tokens"gp2ÿÿgp1e"WhileLexFun"ad"WhileParser"jh3aä¢ParserData"gp2ÿÿ‚ad"Lex"gp1ÿaÿ gp1ÿ gp1e"JoinWithArg"

@@ -1,0 +1,22 @@
+Library
+   structure While
+   structure PostFix
+   structure FunStack
+   structure StackElement
+   structure Vmc
+is
+   datatypes.sml      (* Lots of datatypes *)
+   while.lex             (* Lexer rules. *)
+   while.yacc:MLYacc     (* Parser rules. *)
+   glue.sml           (* Build the parser *)
+   compiler.sml       (* Lex, parse, panic... *)
+   stack.sml
+   postfix.sml
+   vmc.sml
+
+   $/basis.cm         (* Basis library *)
+   $/ml-yacc-lib.cm   (* ML-Lex and ML-Yacc library *)
+
+   $smlnj/compiler/compiler.cm    (* Structure Compiler, needed
+                                     for printDepth, autoloaded. *)
+   $/smlnj-lib.cm

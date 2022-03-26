@@ -1,0 +1,16 @@
+program good2 ::
+
+    var A : bool;
+    var B, C, D, E: int;
+    var F : bool;
+
+{
+    B := B * C + D % E / B;
+    A := B < C || D > E;
+    F := B + D <> C && B % E < C;
+    if (A < F) then {
+       B := B * B;
+    } else {
+       while (B >= C) do { B := B / D; } endwh;
+    } endif;
+}

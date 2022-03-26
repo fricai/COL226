@@ -1,0 +1,6 @@
+program what ::
+    var a, b: int;
+{
+    read a;
+    read b;
+}

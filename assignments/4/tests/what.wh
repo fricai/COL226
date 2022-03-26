@@ -7,5 +7,5 @@ program what ::
         a := 5;
     } else {
         b := 5;
-    }
+    } endif;
 }
